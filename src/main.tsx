@@ -6,18 +6,15 @@ import './styles.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const navItems = ['Events', 'About', 'Gallery', 'Coaching', 'Private', 'Shop'];
+const navItems = ['Events', 'About', 'Gallery', 'Coaching', 'Private Events', 'Shop'];
 
 function BrandMark() {
   return (
     <a className="brand" href="#top" aria-label="Girls With Guns Australia, home">
-      <span className="brand__cross" aria-hidden="true">
-        <i />
-        <i />
-      </span>
+      <strong className="brand__monogram">GWG</strong>
+      <span className="brand__divider" aria-hidden="true" />
       <span className="brand__text">
-        Girls With Guns
-        <small>Australia</small>
+        Girls With<br />Guns Australia
       </span>
     </a>
   );
@@ -35,7 +32,9 @@ function Navigation() {
             {item}
           </a>
         ))}
+        <a className="nav__mobile-cta" href="#prototype-end" onClick={() => setOpen(false)}>Book next shoot</a>
       </nav>
+      <a className="header-cta" href="#prototype-end">Book next shoot <span aria-hidden="true">→</span></a>
       <button
         className="menu-button"
         type="button"
@@ -53,56 +52,47 @@ function Navigation() {
 
 function PaperTarget() {
   return (
-    <div className="target-rig" data-target-rig>
-      <div className="carrier" aria-hidden="true">
-        <span className="carrier__rail" />
-        <span className="carrier__clip carrier__clip--left" />
-        <span className="carrier__clip carrier__clip--right" />
+    <div className="target-rig" data-target-rig aria-label="Worn paper target with a centred circular bullseye">
+      <img
+        className="physical-target"
+        src="/physical-target-sheet-v3.png"
+        alt="A large worn paper shooting target held by a rusty steel carrier"
+      />
+      <div className="target-lockup" aria-hidden="true">
+        <span className="target-lockup__eyeline">Girls With</span>
+        <strong>Guns</strong>
+        <span className="target-lockup__country"><i /> Australia <i /></span>
       </div>
-      <div className="paper-target">
-        <div className="paper-target__header">
-          <span>GWG</span>
-          <span>EST. AUSTRALIA</span>
-          <span>01</span>
-        </div>
-        <div className="target-copy" aria-hidden="true">
-          <span>Girls With</span>
-          <strong>Guns</strong>
-        </div>
-        <div className="bullseye" aria-label="Centred circular bullseye target">
-          <span className="ring ring--one" />
-          <span className="ring ring--two" />
-          <span className="ring ring--three" />
-          <span className="ring ring--four" />
-          <span className="ring ring--core" />
-          <span className="crosshair crosshair--x" />
-          <span className="crosshair crosshair--y" />
-        </div>
-        <span className="impact impact--one" aria-hidden="true" />
-        <span className="impact impact--two" aria-hidden="true" />
-        <span className="impact impact--three" aria-hidden="true" />
-        <div className="paper-target__footer">
-          <span>BEGINNERS WELCOME</span>
-          <span>12+ · SUPERVISED</span>
-        </div>
-      </div>
+      <p className="target-message" aria-hidden="true">Beginner-friendly shooting<br />experiences for women.</p>
     </div>
   );
+}
+
+function DetailIcon({ name }: { name: 'calendar' | 'clock' | 'people' }) {
+  if (name === 'calendar') {
+    return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2v4M18 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2Z" /></svg>;
+  }
+
+  if (name === 'clock') {
+    return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
+  }
+
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM17 11a3 3 0 0 0 0-6M17 14a4 4 0 0 1 4 4v2" /></svg>;
 }
 
 function EventCard() {
   return (
     <article className="event-card overlay-card" data-hero-overlay>
-      <p className="eyebrow"><span /> Next shoot</p>
-      <div className="event-card__body">
-        <div>
-          <p className="event-card__location">Beaconsfield</p>
-          <p className="event-card__date">13 SEP · 10:30AM</p>
-        </div>
-        <span className="event-card__status">Limited spots</span>
+      <span className="event-card__pin" aria-hidden="true" />
+      <p className="event-card__eyebrow">Next shoot</p>
+      <p className="event-card__location">Beaconsfield</p>
+      <div className="event-card__details">
+        <p><DetailIcon name="calendar" /> 13 September</p>
+        <p><DetailIcon name="clock" /> 10:30 AM</p>
+        <p><DetailIcon name="people" /> Limited spots</p>
       </div>
-      <a href="#prototype-end" className="text-link">
-        Book your spot <span aria-hidden="true">↗</span>
+      <a href="#prototype-end" className="paper-button">
+        Book your spot <span aria-hidden="true">→</span>
       </a>
     </article>
   );
@@ -110,15 +100,15 @@ function EventCard() {
 
 function GalleryPreview() {
   return (
-    <a className="gallery-preview overlay-card" data-hero-overlay href="#prototype-end">
+    <a className="gallery-preview overlay-card" data-hero-overlay href="#prototype-end" aria-label="View the Girls With Guns gallery">
       <div className="gallery-stack" aria-hidden="true">
-        <span className="gallery-print gallery-print--back">03</span>
-        <span className="gallery-print gallery-print--mid">02</span>
-        <span className="gallery-print gallery-print--front">01</span>
+        <span className="gallery-print gallery-print--back"><img src="/shooting-range-hero-backdrop.png" alt="" /></span>
+        <span className="gallery-print gallery-print--mid"><img src="/shooting-range-hero-backdrop.png" alt="" /></span>
+        <span className="gallery-print gallery-print--front"><img src="/shooting-range-hero-backdrop.png" alt="" /></span>
       </div>
-      <div>
-        <p className="eyebrow">From the range</p>
-        <p className="gallery-preview__link">View gallery <span aria-hidden="true">↗</span></p>
+      <div className="gallery-label">
+        <p>From the Range</p>
+        <span>View gallery <i aria-hidden="true">→</i></span>
       </div>
     </a>
   );
@@ -176,7 +166,7 @@ function App() {
 
         timeline
           .to('[data-hero-overlay]', { autoAlpha: 0, y: 18, duration: 0.18, stagger: 0.025 }, 0.04)
-          .to('[data-target-rig]', { scale: 0.115, yPercent: -3, rotationX: 7, duration: 0.67, ease: 'power2.inOut' }, 0)
+          .to('[data-target-rig]', { scale: 0.105, yPercent: -5, rotationX: 5, duration: 0.67, ease: 'power2.inOut' }, 0)
           .to('[data-lane]', { scale: 1, filter: 'brightness(.68) saturate(.78)', duration: 0.67 }, 0)
           .fromTo('[data-story]', { xPercent: 102 }, { xPercent: 0, duration: 0.52, ease: 'power3.inOut' }, 0.38)
           .to('[data-target-rig]', { autoAlpha: 0, duration: 0.15 }, 0.8)
@@ -196,7 +186,7 @@ function App() {
 
         timeline
           .to('[data-hero-overlay]', { autoAlpha: 0, y: 10, duration: 0.16 }, 0.02)
-          .to('[data-target-rig]', { scale: 0.24, yPercent: -5, duration: 0.6, ease: 'power2.inOut' }, 0)
+          .to('[data-target-rig]', { scale: 0.2, yPercent: -5, duration: 0.6, ease: 'power2.inOut' }, 0)
           .fromTo('[data-story]', { xPercent: 102 }, { xPercent: 0, duration: 0.52, ease: 'power3.inOut' }, 0.38)
           .to('[data-target-rig]', { autoAlpha: 0, duration: 0.16 }, 0.8);
       });
