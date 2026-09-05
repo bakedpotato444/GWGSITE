@@ -1,6 +1,6 @@
 # UI and motion refinement — 5 September 2026
 
-Preserves the agreed physical target, centred bullseye, range retraction, overlapping story sweep, event note and gallery stack. Real GWG media remains a separate candidate-selection step. Event details and unbuilt destinations remain prototype content.
+Preserves the agreed physical target, centred bullseye, range retraction, overlapping story sweep, event note and gallery stack. The linked planning conversation is “mums site” (conversation ID `6a967b09-2ddc-83ec-8690-a8c271179999`) and is the reference point for earlier site decisions. Event details and unbuilt destinations remain prototype content.
 
 ## Changes
 
@@ -23,3 +23,9 @@ Preserves the agreed physical target, centred bullseye, range retraction, overla
 - Mobile menu blocks underlying content, cycles focus to its first link and restores the toggle on Escape.
 - Corrected native smooth-scroll / GSAP conflict and refreshed timeline accessibility/header state after resize.
 - Reduced-motion path reviewed in source; operating-system preference emulation was not available in this browser session.
+
+## Interim real media
+
+- Until approved Pronto footage is supplied, the story frame uses the Bendigo participant portrait.
+- The gallery stack uses separate Bendigo range, Bendigo target-group and Beaconsfield group images.
+- These are used only in the private prototype pending final participant and photographer usage confirmation.

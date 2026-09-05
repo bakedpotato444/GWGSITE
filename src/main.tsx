@@ -152,8 +152,13 @@ function EventCard() {
 }
 
 function GalleryPreview() {
+  const galleryImages = [
+    { layer: 'back', src: '/gwg-range-wide.webp', location: 'Bendigo', number: '01' },
+    { layer: 'mid', src: '/gwg-target-group.webp', location: 'Bendigo', number: '02' },
+    { layer: 'front', src: '/gwg-beaconsfield-group.webp', location: 'Beaconsfield', number: '03' },
+  ];
   return <div className="gallery-position" data-hero-overlay><a className="gallery-preview" href="#prototype-end" aria-label="View the Girls With Guns gallery">
-    <div className="gallery-stack" aria-hidden="true">{['back', 'mid', 'front'].map((layer, index) => <span className={'gallery-print gallery-print--' + layer} key={layer}><img src="/shooting-range-hero-backdrop.webp" alt="" width="1672" height="941" /><small>From the range <i>0{index + 1}</i></small></span>)}</div>
+    <div className="gallery-stack" aria-hidden="true">{galleryImages.map(({ layer, src, location, number }) => <span className={'gallery-print gallery-print--' + layer} key={layer}><img src={src} alt="" width="1600" height="1200" loading="lazy" /><small>{location} <i>{number}</i></small></span>)}</div>
     <div className="gallery-label"><p>From the Range</p><span>View gallery<Arrow /></span></div>
   </a></div>;
 }
@@ -162,9 +167,9 @@ function StoryPanel() {
   return <section className="story-panel" id="story" data-story aria-labelledby="story-heading" tabIndex={-1}>
     <div className="story-panel__inner">
       <figure className="story-panel__media" data-story-media>
-        <div className="story-panel__image"><img data-story-image src="/shooting-range-hero-backdrop.webp" alt="An empty shooting range, awaiting the GWG photo and film selection" width="1672" height="941" /></div>
+        <div className="story-panel__image"><img data-story-image src="/gwg-participant-portrait.webp" alt="A Girls With Guns participant smiling at the range while holding a pink rifle" width="1200" height="1020" /></div>
         <div className="story-panel__media-caption"><span className="eyebrow">Our story</span><p>It starts with<br /><em>showing up.</em></p></div>
-        <figcaption>GWG film &amp; photography to follow</figcaption>
+        <figcaption>GWG participant / Bendigo</figcaption>
       </figure>
       <div className="story-panel__copy">
         <p className="eyebrow eyebrow--dark" data-story-reveal><span />Why GWG exists</p>

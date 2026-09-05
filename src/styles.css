@@ -132,15 +132,15 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .gallery-preview { display: block; position: relative; height: 295px; }
 .gallery-stack { position: absolute; inset: 0 0 35px; }
 .gallery-print { position: absolute; display: block; width: 58%; aspect-ratio: 1.28; padding: 8px 8px 25px; background: var(--grain), #e2d6c2; border: 1px solid #eee2cebd; box-shadow: 0 12px 25px #0007; transition: transform 600ms var(--ease); }
-.gallery-print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: sepia(.22) saturate(.55) brightness(.82); }
+.gallery-print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: sepia(.12) saturate(.78) brightness(.86); }
 .gallery-print small { position: absolute; bottom: 6px; inset-inline: 9px; display: flex; justify-content: space-between; font: 500 12px/1 var(--serif); color: #685645; }
 .gallery-print i { font-size: 10px; font-style: normal; }
 .gallery-print--back { top: 1px; right: 5%; transform: rotate(-10deg); }
-.gallery-print--back img { object-position: 77% center; }
+.gallery-print--back img { object-position: 44% center; }
 .gallery-print--mid { top: 95px; right: 41%; transform: rotate(-3deg); }
-.gallery-print--mid img { object-position: 18% center; }
+.gallery-print--mid img { object-position: center 42%; }
 .gallery-print--front { top: 107px; right: 0; transform: rotate(7deg); }
-.gallery-print--front img { object-position: 56% center; }
+.gallery-print--front img { object-position: center 43%; }
 .gallery-label { position: absolute; z-index: 2; bottom: 0; right: -1%; width: 84%; padding: 13px 20px 12px; background: var(--grain), linear-gradient(100deg, #e9decb, #d8cbb8); box-shadow: 0 12px 23px #0006; transform: rotate(3deg); transition: transform 500ms var(--ease); }
 .gallery-label p { margin: 0 0 7px; font: italic 500 clamp(2rem, 2.75vw, 2.9rem)/.9 var(--serif); color: var(--pink-deep); white-space: nowrap; }
 .gallery-label > span { display: flex; align-items: center; justify-content: space-between; padding-bottom: 5px; border-bottom: 1px solid #72544866; color: #30241f; font-size: .76rem; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; }
@@ -159,7 +159,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .story-panel__inner { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); align-items: center; gap: clamp(45px, 6.2vw, 110px); max-width: 1660px; min-height: 100svh; padding: 136px 6vw 84px; margin: auto; }
 .story-panel__media { position: relative; align-self: stretch; min-height: 560px; margin: 0; background: #221d1b; box-shadow: 0 10px 24px #46321d20; }
 .story-panel__image { position: absolute; inset: 0; overflow: hidden; }
-.story-panel__image img { width: 100%; height: 100%; object-fit: cover; object-position: 45% center; filter: saturate(.55) brightness(.77); }
+.story-panel__image img { width: 100%; height: 100%; object-fit: cover; object-position: 51% center; filter: saturate(.8) brightness(.8) contrast(1.03); }
 .story-panel__image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 25%, #0d0b0ba8), linear-gradient(110deg, #7e3d481f, transparent); }
 .story-panel__media-caption { position: absolute; bottom: 40px; left: 37px; color: var(--white); }
 .story-panel__media-caption .eyebrow { margin-bottom: 22px; color: #f2d2d2; }
