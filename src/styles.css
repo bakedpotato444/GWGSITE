@@ -347,6 +347,55 @@ button:focus-visible {
   background: var(--pink-deep);
 }
 
+.paper-impacts {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.paper-impact {
+  position: absolute;
+  aspect-ratio: 1;
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(var(--impact-rotation));
+  transform-origin: center;
+  animation: paper-impact-arrive 360ms cubic-bezier(.16, 1, .3, 1) both;
+  filter: drop-shadow(0 1px 1px rgba(37, 27, 22, .38));
+  mix-blend-mode: multiply;
+  will-change: transform, opacity;
+}
+
+.paper-impact img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.paper-impact--retiring {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(var(--impact-rotation)) scale(.72);
+  animation: none;
+  transition: opacity 540ms ease, transform 540ms ease-in;
+}
+
+@keyframes paper-impact-arrive {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--impact-rotation)) scale(.24);
+  }
+  68% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--impact-rotation)) scale(1.07);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--impact-rotation)) scale(1);
+  }
+}
+
 .overlay-card {
   position: absolute;
   z-index: 7;
@@ -965,4 +1014,5 @@ button:focus-visible {
 
   .story-panel { transform: none !important; }
   .scroll-cue { display: none; }
+  .paper-impacts { display: none; }
 }

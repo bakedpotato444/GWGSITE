@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -7,6 +7,26 @@ import './styles.css';
 gsap.registerPlugin(ScrollTrigger);
 
 const navItems = ['Events', 'About', 'Gallery', 'Coaching', 'Private Events', 'Shop'];
+
+type PaperImpact = {
+  id: number;
+  retiring?: boolean;
+  rotation: number;
+  size: number;
+  x: number;
+  y: number;
+};
+
+const impactPositions = [
+  { x: 34, y: 43 },
+  { x: 67, y: 44 },
+  { x: 33, y: 55 },
+  { x: 68, y: 56 },
+  { x: 40, y: 48 },
+  { x: 60, y: 52 },
+  { x: 47, y: 58 },
+  { x: 57, y: 41 },
+];
 
 function BrandMark() {
   return (
@@ -51,11 +71,126 @@ function Navigation() {
 }
 
 function PaperTarget() {
+  const target = useRef<HTMLDivElement>(null);
+  const removalTimers = useRef<Set<number>>(new Set());
+  const [impacts, setImpacts] = useState<PaperImpact[]>([]);
+
+  useEffect(() => {
+    if (!target.current) return;
+
+    const targetElement = target.current;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mobile = window.matchMedia('(max-width: 767px)');
+    let impactId = 0;
+    let positionIndex = Math.floor(Math.random() * impactPositions.length);
+    let timer: number | undefined;
+    let targetInView = true;
+    let heroAtStart = true;
+    let firstImpact = true;
+
+    const clearTimer = () => {
+      if (timer === undefined) return;
+      window.clearTimeout(timer);
+      timer = undefined;
+    };
+
+    const canRun = () => !reducedMotion.matches && !document.hidden && targetInView && heroAtStart;
+    const nextDelay = () => mobile.matches
+      ? 3600 + Math.random() * 1500
+      : 2600 + Math.random() * 1400;
+
+    const addImpact = () => {
+      positionIndex = (positionIndex + 1 + Math.floor(Math.random() * 3)) % impactPositions.length;
+      const position = impactPositions[positionIndex];
+      const maxActive = mobile.matches ? 2 : 3;
+      const nextImpact: PaperImpact = {
+        id: ++impactId,
+        x: position.x + (Math.random() - .5) * 2.4,
+        y: position.y + (Math.random() - .5) * 2.2,
+        size: (mobile.matches ? 31 : 38) + Math.random() * (mobile.matches ? 8 : 12),
+        rotation: -18 + Math.random() * 36,
+      };
+
+      setImpacts((current) => {
+        const activeImpacts = current.filter((impact) => !impact.retiring);
+
+        if (activeImpacts.length < maxActive) {
+          return [...current, nextImpact];
+        }
+
+        const oldest = activeImpacts[0];
+        const removalTimer = window.setTimeout(() => {
+          setImpacts((items) => items.filter((impact) => impact.id !== oldest.id));
+          removalTimers.current.delete(removalTimer);
+        }, 560);
+        removalTimers.current.add(removalTimer);
+
+        return [
+          ...current.map((impact) => impact.id === oldest.id ? { ...impact, retiring: true } : impact),
+          nextImpact,
+        ];
+      });
+    };
+
+    const schedule = () => {
+      if (!canRun() || timer !== undefined) return;
+      timer = window.setTimeout(() => {
+        timer = undefined;
+        if (!canRun()) return;
+        addImpact();
+        firstImpact = false;
+        schedule();
+      }, firstImpact ? 1450 : nextDelay());
+    };
+
+    const sync = () => {
+      if (canRun()) schedule();
+      else clearTimer();
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      targetInView = entry.isIntersecting;
+      sync();
+    }, { threshold: .12 });
+    observer.observe(targetElement);
+
+    const scrollGate = ScrollTrigger.create({
+      trigger: '[data-scroll-stage]',
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (self) => {
+        heroAtStart = self.progress < .11;
+        sync();
+      },
+    });
+    heroAtStart = scrollGate.progress < .11;
+
+    const handleVisibility = () => sync();
+    const handleMotionPreference = () => {
+      if (reducedMotion.matches) setImpacts([]);
+      sync();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    reducedMotion.addEventListener('change', handleMotionPreference);
+    sync();
+
+    return () => {
+      clearTimer();
+      removalTimers.current.forEach((removalTimer) => window.clearTimeout(removalTimer));
+      removalTimers.current.clear();
+      observer.disconnect();
+      scrollGate.kill();
+      document.removeEventListener('visibilitychange', handleVisibility);
+      reducedMotion.removeEventListener('change', handleMotionPreference);
+    };
+  }, []);
+
   return (
-    <div className="target-rig" data-target-rig aria-label="Worn paper target with a centred circular bullseye">
+    <div ref={target} className="target-rig" data-target-rig aria-label="Worn paper target with a centred circular bullseye">
       <img
         className="physical-target"
-        src="/physical-target-sheet-v3.png"
+        src="/physical-target-sheet-clean-v1.png"
         alt="A large worn paper shooting target held by a rusty steel carrier"
       />
       <div className="target-lockup" aria-hidden="true">
@@ -64,6 +199,22 @@ function PaperTarget() {
         <span className="target-lockup__country"><i /> Australia <i /></span>
       </div>
       <p className="target-message" aria-hidden="true">Beginner-friendly shooting<br />experiences for women.</p>
+      <div className="paper-impacts" aria-hidden="true">
+        {impacts.map((impact) => (
+          <span
+            className={impact.retiring ? 'paper-impact paper-impact--retiring' : 'paper-impact'}
+            key={impact.id}
+            style={{
+              '--impact-rotation': `${impact.rotation}deg`,
+              left: `${impact.x}%`,
+              top: `${impact.y}%`,
+              width: `${impact.size}px`,
+            } as CSSProperties}
+          >
+            <img src="/paper-impact-decal-v1-256.png" alt="" />
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
