@@ -264,6 +264,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .effects-toggle { right: 23px; bottom: 15px; font-size: .65rem; }
   .story-panel__inner { display: flex; flex-direction: column; align-items: stretch; gap: 43px; min-height: 100svh; padding: 103px 24px 83px; }
   .story-panel__media { height: 43svh; min-height: 265px; max-height: 400px; flex-shrink: 0; }
+  .story-panel__image img { object-position: 51% 20%; }
   .story-panel__media-caption { left: 25px; bottom: 27px; }
   .story-panel__media-caption .eyebrow { margin-bottom: 13px; font-size: .7rem; }
   .story-panel__media-caption p { font-size: clamp(2.8rem, 10.3vw, 4rem); }

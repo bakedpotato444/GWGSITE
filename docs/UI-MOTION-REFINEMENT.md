@@ -28,4 +28,5 @@ Preserves the agreed physical target, centred bullseye, range retraction, overla
 
 - Until approved Pronto footage is supplied, the story frame uses the Bendigo participant portrait.
 - The gallery stack uses separate Bendigo range, Bendigo target-group and Beaconsfield group images.
+- The story portrait uses a higher mobile focal point so the participant's face remains visible in short, wide preview windows as well as normal phone portrait.
 - These are used only in the private prototype pending final participant and photographer usage confirmation.
