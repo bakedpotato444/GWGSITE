@@ -46,3 +46,10 @@ Preserves the agreed physical target, centred bullseye, range retraction, overla
 - Desktop uses a visible numbered contents list with a responsive image preview that changes on hover or keyboard focus; mobile places the relevant visual directly inside every destination row.
 - The Shop preview remains a typographic brand treatment until approved merch photography is available, avoiding a misleading product placeholder.
 - Destination links remain prototype anchors until their dedicated pages are built.
+
+## Homepage section 05 — Event, waitlist and footer
+
+- Finished the curated homepage with the same Beaconsfield preview event used in the hero and a regional waitlist fallback for visitors outside that area.
+- The waitlist prototype uses visible labels, native required-field validation and a clear local success state, while explicitly confirming that no details are submitted or saved.
+- Added the full footer navigation and brand sign-off without inventing external social or booking URLs.
+- Event details, booking links, social links and legal destinations remain placeholders until supplied and verified.

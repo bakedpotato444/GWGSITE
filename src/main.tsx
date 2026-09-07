@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -292,6 +292,66 @@ function ExploreSection() {
   </section>;
 }
 
+function FinalCta() {
+  const [joined, setJoined] = useState(false);
+  const previewWaitlist = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setJoined(true);
+  };
+
+  return <section className="final-cta" id="prototype-end" data-final aria-labelledby="final-cta-heading" tabIndex={-1}>
+      <div className="final-cta__inner">
+        <header className="final-cta__header">
+          <p className="eyebrow final-cta__eyebrow" data-final-reveal><span />05 / Your next shoot</p>
+          <h2 id="final-cta-heading" data-final-reveal>Ready when<br /><em>you are.</em></h2>
+          <p data-final-reveal>Book the next shoot, or tell GWG where you’d like to see one.</p>
+        </header>
+
+        <div className="final-cta__grid">
+          <article className="final-event" data-final-card aria-labelledby="final-event-title">
+            <div className="final-event__topline"><span>Next shoot</span><span className="final-event__status"><i />Limited spots</span></div>
+            <h3 id="final-event-title">Beaconsfield</h3>
+            <dl className="final-event__details">
+              <div><dt>Date</dt><dd>13 September</dd></div>
+              <div><dt>Start</dt><dd>10:30 AM</dd></div>
+            </dl>
+            <a className="final-event__button" href="#prototype-end"><span>Book your spot</span><Arrow /></a>
+            <p className="final-event__note">Preview event details — booking link to be connected.</p>
+          </article>
+
+          <div className="waitlist-panel" data-final-card>
+            <p className="eyebrow">Not your area?</p>
+            <h3>Tell us where<br />to go next.</h3>
+            <p className="waitlist-panel__body">Add your suburb or postcode and how far you’re happy to travel. When a suitable shoot opens nearby, GWG can let you know.</p>
+            {joined ? <div className="waitlist-success" role="status" tabIndex={-1}>
+              <span>Preview complete</span><strong>That’s the success state.</strong><p>No details were submitted or saved.</p>
+              <button type="button" onClick={() => setJoined(false)}>Try the form again</button>
+            </div> : <form className="waitlist-form" onSubmit={previewWaitlist}>
+              <label><span>Suburb or postcode</span><input name="location" type="text" autoComplete="postal-code" placeholder="e.g. Pakenham 3810" required /></label>
+              <label><span>Travel distance</span><select name="distance" defaultValue="" required><option value="" disabled>Select distance</option><option value="30">Up to 30 km</option><option value="60">Up to 60 km</option><option value="100">Up to 100 km</option><option value="anywhere">Happy to travel</option></select></label>
+              <button type="submit"><span>Join the waitlist</span><Arrow /></button>
+              <small>Prototype only — these details aren’t submitted yet.</small>
+            </form>}
+          </div>
+        </div>
+      </div>
+  </section>;
+}
+
+function SiteFooter() {
+  return <footer className="site-footer">
+    <div className="site-footer__inner">
+      <a className="footer-brand" href="#top" aria-label="Girls With Guns Australia, back to top"><strong>GWG</strong><span>Girls With<br />Guns Australia</span></a>
+      <nav className="footer-nav" aria-label="Footer navigation">
+        <a href="#prototype-end">Events</a><a href="#story">About</a><a href="#explore">Gallery</a><a href="#explore">Coaching</a><a href="#explore">Private Events</a><a href="#explore">Shop</a>
+      </nav>
+      <div className="footer-social"><a href="#prototype-end">Instagram</a><a href="#prototype-end">Facebook</a></div>
+      <p className="site-footer__signoff">Come curious.<br /><em>Leave confident.</em></p>
+      <div className="site-footer__bottom"><span>© 2026 Girls With Guns Australia</span><span>Private homepage prototype</span><a href="#top">Back to top <Arrow /></a></div>
+    </div>
+  </footer>;
+}
+
 function App() {
   const root = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
@@ -446,6 +506,17 @@ function App() {
       return () => reveal.kill();
     }, root);
 
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      if (!prototypeEnd) return;
+      const reveals = prototypeEnd.querySelectorAll<HTMLElement>('[data-final-reveal]');
+      const cards = prototypeEnd.querySelectorAll<HTMLElement>('[data-final-card]');
+      const reveal = gsap.timeline({ scrollTrigger: { trigger: prototypeEnd, start: 'top 78%', once: true } });
+      reveal
+        .fromTo(reveals, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .42, stagger: .07, ease: 'power2.out' })
+        .fromTo(cards, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .46, stagger: .1, ease: 'power2.out' }, .2);
+      return () => reveal.kill();
+    }, root);
+
     const restoreHash = window.setTimeout(() => {
       if (location.hash === '#story' && experience.current) window.scrollTo({ top: experience.current.end, behavior: 'instant' });
     }, 150);
@@ -470,11 +541,9 @@ function App() {
       </div></div>
       <ExperienceSection />
       <ExploreSection />
-      <section className="prototype-end" id="prototype-end" aria-labelledby="prototype-end-title">
-        <div><p className="eyebrow">GWG / Homepage preview</p><h2 id="prototype-end-title">A first look.<br /><em>A new beginning.</em></h2></div>
-        <div className="prototype-end__note"><p>You’re exploring the hero, our story, the GWG experience and the site’s main pathways. Bookings, the full gallery and dedicated pages are still to come.</p><a className="story-cta" href="#top"><span>Back to the range</span><Arrow /></a></div>
-      </section>
+      <FinalCta />
     </main>
+    <SiteFooter />
   </div>;
 }
 
