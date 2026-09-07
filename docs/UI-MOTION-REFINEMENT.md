@@ -28,5 +28,13 @@ Preserves the agreed physical target, centred bullseye, range retraction, overla
 
 - Until approved Pronto footage is supplied, the story frame uses the Bendigo participant portrait.
 - The gallery stack uses separate Bendigo range, Bendigo target-group and Beaconsfield group images.
+- The Experience section uses a separate wide Beaconsfield group photo and an Echuca safety-gear detail rather than repeating the hero gallery frames.
 - The story portrait uses a higher mobile focal point so the participant's face remains visible in short, wide preview windows as well as normal phone portrait.
 - These are used only in the private prototype pending final participant and photographer usage confirmation.
+
+## Homepage section 03 — The Experience
+
+- Added the agreed “Never shot before? Perfect.” message, four beginner reassurances and three-part shoot-day sequence from “mums site”.
+- Used a dark editorial break after the calmer story section, with restrained image and content reveals on viewport entry.
+- Kept the complete section visible without animation when reduced motion is preferred.
+- The experience CTA remains a prototype anchor until the dedicated experience or events destination is built.

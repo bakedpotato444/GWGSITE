@@ -183,6 +183,60 @@ function StoryPanel() {
   </section>;
 }
 
+const experienceFacts = [
+  { label: 'Beginner friendly', detail: 'No prior experience' },
+  { label: 'No licence required', detail: 'Come as you are' },
+  { label: 'Ages 12+', detail: 'A shared first experience' },
+  { label: 'Everything provided', detail: 'Equipment & safety gear' },
+];
+
+const experienceSteps = [
+  { number: '01', title: 'Safety briefing', detail: 'Get comfortable before you step onto the range.' },
+  { number: '02', title: 'Rifles & pistols', detail: 'Try both, with guidance throughout the session.' },
+  { number: '03', title: 'Take home your target', detail: 'Leave with the proof that you gave it a go.' },
+];
+
+function ExperienceSection() {
+  return <section className="experience-section" id="experience" data-experience aria-labelledby="experience-heading">
+    <div className="experience-section__inner">
+      <header className="experience-section__header">
+        <p className="eyebrow experience-section__eyebrow" data-experience-reveal><span />03 / The experience</p>
+        <h2 id="experience-heading" data-experience-reveal>Never shot before?<br /><em>Perfect.</em></h2>
+        <div className="experience-section__intro" data-experience-reveal>
+          <p>No experience, no licence and no gear? That’s exactly what a GWG shoot day is built for. Everything is set up so your first time feels clear, guided and approachable.</p>
+          <a className="experience-cta" href="#prototype-end"><span>See what a GWG shoot day is like</span><Arrow /></a>
+        </div>
+      </header>
+
+      <div className="experience-section__body">
+        <dl className="experience-facts" aria-label="What to know before a Girls With Guns shoot">
+          {experienceFacts.map(({ label, detail }, index) => <div className="experience-fact" data-experience-reveal key={label}>
+            <dt><span>0{index + 1}</span>{label}</dt><dd>{detail}</dd>
+          </div>)}
+        </dl>
+
+        <div className="experience-media" data-experience-media>
+          <figure className="experience-media__group">
+            <img src="/gwg-beaconsfield-wide.webp" alt="Girls With Guns participants at Beaconsfield holding their paper targets after a shoot" width="1536" height="1152" loading="lazy" />
+            <figcaption>Beaconsfield / After the shoot</figcaption>
+          </figure>
+          <figure className="experience-media__detail">
+            <img src="/gwg-safety-gear.webp" alt="Pink hearing protection and safety glasses ready for Girls With Guns participants" width="1000" height="1333" loading="lazy" />
+            <figcaption>Safety gear / Provided</figcaption>
+          </figure>
+          <p className="experience-media__note" aria-hidden="true">Everything’s ready.<br />So you can be too.</p>
+        </div>
+      </div>
+
+      <ol className="experience-process" aria-label="A Girls With Guns shoot day">
+        {experienceSteps.map(({ number, title, detail }) => <li className="experience-step" data-experience-step key={number}>
+          <span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div>
+        </li>)}
+      </ol>
+    </div>
+  </section>;
+}
+
 function App() {
   const root = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
@@ -227,6 +281,7 @@ function App() {
     const sceneElement = scene.current;
     const hero = app.querySelector<HTMLElement>('[data-hero]')!;
     const story = app.querySelector<HTMLElement>('[data-story]')!;
+    const experienceSection = app.querySelector<HTMLElement>('[data-experience]');
     const rig = app.querySelector<HTMLElement>('[data-target-rig]')!;
     const mm = gsap.matchMedia();
     let alive = true;
@@ -286,10 +341,32 @@ function App() {
       };
     }, root);
 
+    const experienceHeader = experienceSection ? ScrollTrigger.create({
+      trigger: experienceSection,
+      start: 'top 76px',
+      onEnter: () => setLightHeader(false),
+      onLeaveBack: () => setLightHeader(true),
+    }) : null;
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      if (!experienceSection) return;
+      const reveals = experienceSection.querySelectorAll<HTMLElement>('[data-experience-reveal]');
+      const steps = experienceSection.querySelectorAll<HTMLElement>('[data-experience-step]');
+      const media = experienceSection.querySelector<HTMLElement>('[data-experience-media]');
+      const reveal = gsap.timeline({
+        scrollTrigger: { trigger: experienceSection, start: 'top 77%', once: true },
+      });
+      if (media) reveal.fromTo(media, { clipPath: 'inset(6% 6% 6% 6%)', scale: 1.035 }, { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: .65, ease: 'power2.out' });
+      reveal
+        .fromTo(reveals, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .42, stagger: .065, ease: 'power2.out' }, .1)
+        .fromTo(steps, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .35, stagger: .08, ease: 'power1.out' }, .32);
+      return () => reveal.kill();
+    }, root);
+
     const restoreHash = window.setTimeout(() => {
       if (location.hash === '#story' && experience.current) window.scrollTo({ top: experience.current.end, behavior: 'instant' });
     }, 150);
-    return () => { alive = false; window.clearTimeout(restoreHash); mm.revert(); };
+    return () => { alive = false; window.clearTimeout(restoreHash); experienceHeader?.kill(); mm.revert(); };
   }, []);
 
   return <div className="app" ref={root} id="top" onClick={navigatePreview}>
@@ -308,9 +385,10 @@ function App() {
         </section>
         <StoryPanel />
       </div></div>
+      <ExperienceSection />
       <section className="prototype-end" id="prototype-end" aria-labelledby="prototype-end-title">
         <div><p className="eyebrow">GWG / Homepage preview</p><h2 id="prototype-end-title">A first look.<br /><em>A new beginning.</em></h2></div>
-        <div className="prototype-end__note"><p>You’re exploring the hero and our-story concept. Bookings, the gallery and the rest of the site are still to come.</p><a className="story-cta" href="#top"><span>Back to the range</span><Arrow /></a></div>
+        <div className="prototype-end__note"><p>You’re exploring the hero, our story and the GWG experience. Bookings, the full gallery and the rest of the site are still to come.</p><a className="story-cta" href="#top"><span>Back to the range</span><Arrow /></a></div>
       </section>
     </main>
   </div>;
