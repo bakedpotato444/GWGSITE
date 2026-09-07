@@ -15,7 +15,7 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <svg className={diagonal ? 'arrow arrow--diagonal' : 'arrow'} viewBox="0 0 28 20" fill="none" aria-hidden="true"><path d="M2 10h23M17 3l7 7-7 7" /></svg>;
 }
 
-type SitePage = 'home' | 'events' | 'about';
+type SitePage = 'home' | 'events' | 'about' | 'gallery';
 
 function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPage?: SitePage }) {
   const [open, setOpen] = useState(false);
@@ -24,6 +24,7 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
   const navHref = (item: string) => {
     if (item === 'Events') return currentPage === 'events' ? '#event' : '/events#event';
     if (item === 'About') return currentPage === 'about' ? '#story' : '/about#story';
+    if (item === 'Gallery') return currentPage === 'gallery' ? '#gallery' : '/gallery#gallery';
     return currentPage === 'home' ? '#explore' : '/#explore';
   };
 
@@ -64,7 +65,7 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
         <span className="brand__text">Girls With<br />Guns Australia</span>
       </a>
       <nav ref={menu} id="primary-navigation" className={open ? 'nav nav--open' : 'nav'} aria-label="Primary navigation">
-        {navItems.map((item, index) => <a key={item} href={navHref(item)} aria-current={(currentPage === 'events' && item === 'Events') || (currentPage === 'about' && item === 'About') ? 'page' : undefined} onClick={() => setOpen(false)} style={{ '--item-index': index } as CSSProperties}><span className="nav__number" aria-hidden="true">0{index + 1}</span>{item}</a>)}
+        {navItems.map((item, index) => <a key={item} href={navHref(item)} aria-current={(currentPage === 'events' && item === 'Events') || (currentPage === 'about' && item === 'About') || (currentPage === 'gallery' && item === 'Gallery') ? 'page' : undefined} onClick={() => setOpen(false)} style={{ '--item-index': index } as CSSProperties}><span className="nav__number" aria-hidden="true">0{index + 1}</span>{item}</a>)}
         <a className="nav__mobile-cta" href={currentPage === 'events' ? '#event-details' : '/events#event-details'} onClick={() => setOpen(false)}>Book next shoot <Arrow /></a>
         <p className="nav__signoff">Come curious. Leave confident.</p>
       </nav>
@@ -161,7 +162,7 @@ function GalleryPreview() {
     { layer: 'mid', src: '/gwg-target-group.webp', location: 'Bendigo', number: '02' },
     { layer: 'front', src: '/gwg-beaconsfield-group.webp', location: 'Beaconsfield', number: '03' },
   ];
-  return <div className="gallery-position" data-hero-overlay><a className="gallery-preview" href="#prototype-end" aria-label="View the Girls With Guns gallery">
+  return <div className="gallery-position" data-hero-overlay><a className="gallery-preview" href="/gallery#gallery" aria-label="View the Girls With Guns gallery">
     <div className="gallery-stack" aria-hidden="true">{galleryImages.map(({ layer, src, location, number }) => <span className={'gallery-print gallery-print--' + layer} key={layer}><img src={src} alt="" width="1600" height="1200" loading="lazy" /><small>{location} <i>{number}</i></small></span>)}</div>
     <div className="gallery-label"><p>From the Range</p><span>View gallery<Arrow /></span></div>
   </a></div>;
@@ -242,10 +243,10 @@ function ExperienceSection() {
 }
 
 const exploreItems = [
-  { title: 'Gallery', detail: 'Real shoot-day imagery.', image: '/gwg-target-group.webp', position: 'center 42%' },
-  { title: '1-on-1 Coaching', detail: 'Learn at your own pace.', image: '/gwg-participant-portrait.webp', position: '51% 25%' },
-  { title: 'Private Events', detail: 'Hens, birthdays, teams.', image: '/gwg-beaconsfield-group.webp', position: 'center 43%' },
-  { title: 'Shop GWG', detail: 'Merch.', image: null, position: 'center' },
+  { title: 'Gallery', detail: 'Real shoot-day imagery.', image: '/gwg-target-group.webp', position: 'center 42%', href: '/gallery#gallery' },
+  { title: '1-on-1 Coaching', detail: 'Learn at your own pace.', image: '/gwg-participant-portrait.webp', position: '51% 25%', href: '#prototype-end' },
+  { title: 'Private Events', detail: 'Hens, birthdays, teams.', image: '/gwg-beaconsfield-group.webp', position: 'center 43%', href: '#prototype-end' },
+  { title: 'Shop GWG', detail: 'Merch.', image: null, position: 'center', href: '#prototype-end' },
 ];
 
 function ExploreVisual({ item, mobile = false }: { item: typeof exploreItems[number]; mobile?: boolean }) {
@@ -271,7 +272,7 @@ function ExploreSection() {
         <nav className="explore-list" aria-label="Explore Girls With Guns">
           {exploreItems.map((item, index) => <a
             className={'explore-row' + (active === index ? ' explore-row--active' : '')}
-            href="#prototype-end"
+            href={item.href}
             key={item.title}
             data-explore-row
             onMouseEnter={() => setActive(index)}
@@ -347,7 +348,7 @@ function SiteFooter({ currentPage = 'home' }: { currentPage?: SitePage }) {
     <div className="site-footer__inner">
       <a className="footer-brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home"><strong>GWG</strong><span>Girls With<br />Guns Australia</span></a>
       <nav className="footer-nav" aria-label="Footer navigation">
-        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'about' ? '#story' : '/about#story'} aria-current={currentPage === 'about' ? 'page' : undefined}>About</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Gallery</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Coaching</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
+        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'about' ? '#story' : '/about#story'} aria-current={currentPage === 'about' ? 'page' : undefined}>About</a><a href={currentPage === 'gallery' ? '#gallery' : '/gallery#gallery'} aria-current={currentPage === 'gallery' ? 'page' : undefined}>Gallery</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Coaching</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
       </nav>
       <div className="footer-social"><a href={currentPage === 'home' ? '#prototype-end' : '/#prototype-end'}>Instagram</a><a href={currentPage === 'home' ? '#prototype-end' : '/#prototype-end'}>Facebook</a></div>
       <p className="site-footer__signoff">Come curious.<br /><em>Leave confident.</em></p>
@@ -748,6 +749,284 @@ function AboutPage() {
   </div>;
 }
 
+const galleryImages = [
+  {
+    src: '/gwg-beaconsfield-wide.webp',
+    alt: 'Girls With Guns participants at Beaconsfield holding their paper targets after the shoot',
+    location: 'Beaconsfield', moment: 'After the shoot', number: '01', width: 1536, height: 1152, position: '50% 48%',
+  },
+  {
+    src: '/gwg-participant-portrait.webp',
+    alt: 'A smiling Girls With Guns participant wearing pink hearing protection and holding a pink rifle',
+    location: 'Bendigo', moment: 'First-time confidence', number: '02', width: 1200, height: 1020, position: '50% 38%',
+  },
+  {
+    src: '/gwg-target-group.webp',
+    alt: 'Three Girls With Guns participants holding their paper targets together at Bendigo',
+    location: 'Bendigo', moment: 'Targets worth keeping', number: '03', width: 1400, height: 1189, position: '50% 42%',
+  },
+  {
+    src: '/gwg-beaconsfield-group.webp',
+    alt: 'Five Girls With Guns participants holding targets and pink safety gear at Beaconsfield',
+    location: 'Beaconsfield', moment: 'The group shot', number: '04', width: 1600, height: 1200, position: '50% 44%',
+  },
+  {
+    src: '/gwg-range-wide.webp',
+    alt: 'Girls With Guns participants gathered inside the Bendigo range shelter between turns',
+    location: 'Bendigo', moment: 'Between turns', number: '05', width: 1400, height: 1190, position: '44% 50%',
+  },
+  {
+    src: '/gwg-safety-gear.webp',
+    alt: 'Rows of pink hearing protection and safety glasses laid out before an Echuca shoot',
+    location: 'Echuca', moment: 'Ready at the line', number: '06', width: 1000, height: 1333, position: '50% 50%',
+  },
+] as const;
+
+function GalleryPage() {
+  const root = useRef<HTMLDivElement>(null);
+  const lightbox = useRef<HTMLDivElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+  const lastFocused = useRef<HTMLElement | null>(null);
+  const [lightHeader, setLightHeader] = useState(false);
+  const [activeFeature, setActiveFeature] = useState(0);
+  const [carouselPaused, setCarouselPaused] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const featuredImages = galleryImages.slice(0, 3);
+  const journalImages = galleryImages.slice(3);
+  const lightboxOpen = lightboxIndex !== null;
+
+  useEffect(() => {
+    document.title = 'Gallery — Girls With Guns Australia';
+    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (description) description.content = 'Real moments from Girls With Guns Australia shoot days across Victoria.';
+  }, []);
+
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => setReduceMotion(preference.matches);
+    preference.addEventListener('change', updatePreference);
+    return () => preference.removeEventListener('change', updatePreference);
+  }, []);
+
+  useEffect(() => {
+    if (carouselPaused || reduceMotion) return;
+    const timer = window.setTimeout(() => setActiveFeature((current) => (current + 1) % featuredImages.length), 5200);
+    return () => window.clearTimeout(timer);
+  }, [activeFeature, carouselPaused, reduceMotion, featuredImages.length]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const focusFrame = window.requestAnimationFrame(() => closeButton.current?.focus({ preventScroll: true }));
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setLightboxIndex(null);
+      if (event.key === 'ArrowLeft') setLightboxIndex((current) => current === null ? 0 : (current - 1 + galleryImages.length) % galleryImages.length);
+      if (event.key === 'ArrowRight') setLightboxIndex((current) => current === null ? 0 : (current + 1) % galleryImages.length);
+      if (event.key !== 'Tab') return;
+      const controls = Array.from(lightbox.current?.querySelectorAll<HTMLButtonElement>('button:not([disabled])') ?? []);
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKey);
+      window.requestAnimationFrame(() => lastFocused.current?.focus({ preventScroll: true }));
+    };
+  }, [lightboxOpen]);
+
+  const openLightbox = (index: number, event: MouseEvent<HTMLButtonElement>) => {
+    lastFocused.current = event.currentTarget;
+    setLightboxIndex(index);
+  };
+
+  const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    const hash = link?.getAttribute('href');
+    const destination = hash ? document.querySelector<HTMLElement>(hash) : null;
+    if (!hash || !destination) return;
+    event.preventDefault();
+    gsap.to(window, { scrollTo: { y: destination, offsetY: 76, autoKill: true }, duration: reduceMotion ? 0 : .72, ease: 'power2.inOut', overwrite: 'auto', onComplete: () => {
+      history.replaceState(null, '', hash);
+      destination.focus({ preventScroll: true });
+    } });
+  };
+
+  useLayoutEffect(() => {
+    if (!root.current) return;
+    const scope = root.current;
+    const themedSections = [
+      { selector: '[data-gallery-journal]', light: true },
+      { selector: '[data-gallery-invitation]', light: false },
+    ];
+    const syncHeaderTheme = () => {
+      let light = false;
+      themedSections.forEach(({ selector, light: sectionLight }) => {
+        const section = scope.querySelector<HTMLElement>(selector);
+        if (section && section.getBoundingClientRect().top <= 77) light = sectionLight;
+      });
+      setLightHeader(light);
+    };
+    const headerTrigger = ScrollTrigger.create({ start: 0, end: 'max', onUpdate: syncHeaderTheme, onRefresh: syncHeaderTheme });
+    const headerFrame = window.requestAnimationFrame(syncHeaderTheme);
+    const mm = gsap.matchMedia();
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const heroItems = scope.querySelectorAll<HTMLElement>('[data-gallery-hero-reveal]');
+      const heroMedia = scope.querySelector<HTMLElement>('[data-gallery-hero-media]');
+      const heroTimeline = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      heroTimeline.fromTo(heroItems, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .46, stagger: .07 });
+      if (heroMedia) heroTimeline.fromTo(heroMedia, { opacity: 0, clipPath: 'inset(0 0 100% 0)' }, { opacity: 1, clipPath: 'inset(0 0 0% 0)', duration: .74, ease: 'power3.inOut' }, .09);
+
+      const sectionAnimations = Array.from(scope.querySelectorAll<HTMLElement>('[data-gallery-section]')).map((section) => {
+        const items = section.querySelectorAll<HTMLElement>('[data-gallery-reveal]');
+        if (!items.length) return null;
+        return gsap.fromTo(items, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: .44, stagger: .065, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 84%', once: true } });
+      });
+
+      const refresh = () => ScrollTrigger.refresh();
+      document.fonts.ready.then(refresh);
+      window.addEventListener('load', refresh, { once: true });
+      return () => {
+        window.removeEventListener('load', refresh);
+        heroTimeline.kill();
+        sectionAnimations.forEach((animation) => animation?.kill());
+      };
+    }, scope);
+
+    return () => { window.cancelAnimationFrame(headerFrame); headerTrigger.kill(); mm.revert(); };
+  }, []);
+
+  const currentLightboxImage = lightboxIndex === null ? null : galleryImages[lightboxIndex];
+
+  return <div className="gallery-page app" ref={root} id="top" onClick={navigateSection}>
+    <a className="skip-link" href="#journal">Skip to the photo journal</a>
+    <Navigation light={lightHeader} currentPage="gallery" />
+    <main>
+      <section className="gallery-hero" id="gallery" aria-labelledby="gallery-heading" tabIndex={-1}>
+        <div className="gallery-hero__inner">
+          <header className="gallery-hero__copy">
+            <p className="eyebrow" data-gallery-hero-reveal><span />Gallery / On the range</p>
+            <h1 id="gallery-heading" data-gallery-hero-reveal>The range,<br />as it<br /><em>happened.</em></h1>
+            <p data-gallery-hero-reveal>Shoot days, first targets, safety gear and the people who showed up to give it a go.</p>
+            <a className="gallery-hero__jump" href="#journal" data-gallery-hero-reveal>See the full roll <Arrow /></a>
+          </header>
+
+          <div
+            className={'gallery-featured' + (carouselPaused || reduceMotion ? ' gallery-featured--paused' : '')}
+            data-gallery-hero-media
+            onMouseEnter={() => setCarouselPaused(true)}
+            onMouseLeave={() => setCarouselPaused(false)}
+            onFocusCapture={() => setCarouselPaused(true)}
+            onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setCarouselPaused(false); }}
+          >
+            <div className="gallery-featured__stage">
+              {featuredImages.map((image, index) => <button
+                className={'gallery-featured__slide' + (activeFeature === index ? ' gallery-featured__slide--active' : '')}
+                type="button"
+                key={image.src}
+                tabIndex={activeFeature === index ? 0 : -1}
+                aria-label={`Open ${image.location}, ${image.moment} photo`}
+                onClick={(event) => openLightbox(index, event)}
+              >
+                <img src={image.src} alt={image.alt} width={image.width} height={image.height} fetchPriority={index === 0 ? 'high' : undefined} style={{ objectPosition: image.position }} />
+                <span className="gallery-featured__open">Open frame <Arrow diagonal /></span>
+              </button>)}
+            </div>
+            <div className="gallery-featured__meta">
+              <p><span>{featuredImages[activeFeature].location}</span>{featuredImages[activeFeature].moment}</p>
+              <div className="gallery-featured__controls">
+                <span className="gallery-featured__count">0{activeFeature + 1} / 03</span>
+                <button type="button" aria-label="Previous featured photo" onClick={() => setActiveFeature((activeFeature - 1 + featuredImages.length) % featuredImages.length)}>Prev</button>
+                <button type="button" disabled={reduceMotion} aria-pressed={carouselPaused} onClick={() => setCarouselPaused(!carouselPaused)}>{reduceMotion ? 'Auto off' : carouselPaused ? 'Play' : 'Pause'}</button>
+                <button type="button" aria-label="Next featured photo" onClick={() => setActiveFeature((activeFeature + 1) % featuredImages.length)}>Next</button>
+              </div>
+            </div>
+            <span className="gallery-featured__progress" aria-hidden="true"><i key={activeFeature} /></span>
+          </div>
+        </div>
+      </section>
+
+      <section className="gallery-journal" id="journal" data-gallery-journal data-gallery-section aria-labelledby="gallery-journal-heading" tabIndex={-1}>
+        <div className="gallery-journal__inner">
+          <header className="gallery-journal__header">
+            <p className="eyebrow eyebrow--dark" data-gallery-reveal><span />01 / The photo journal</p>
+            <h2 id="gallery-journal-heading" data-gallery-reveal>A day at<br /><em>the range.</em></h2>
+            <p data-gallery-reveal>There is the safety briefing, the concentration, the first shot—and then the smile when the target comes back.</p>
+            <dl data-gallery-reveal><div><dt>06</dt><dd>Real photographs</dd></div><div><dt>03</dt><dd>Victorian locations</dd></div></dl>
+          </header>
+
+          <div className="gallery-journal__grid">
+            <figure className="gallery-journal__item gallery-journal__item--wide" data-gallery-reveal>
+              <button type="button" onClick={(event) => openLightbox(3, event)} aria-label={`Open ${journalImages[0].location}, ${journalImages[0].moment} photo`}>
+                <img src={journalImages[0].src} alt={journalImages[0].alt} width={journalImages[0].width} height={journalImages[0].height} loading="lazy" />
+                <span>View full frame <Arrow diagonal /></span>
+              </button>
+              <figcaption><span>{journalImages[0].location} / {journalImages[0].moment}</span><span>{journalImages[0].number}</span></figcaption>
+            </figure>
+
+            <aside className="gallery-journal__note" data-gallery-reveal aria-label="Girls With Guns gallery note">
+              <span>Between the frames</span>
+              <p>The nerves fade.<br />The questions start.<br /><em>Then someone takes<br />the first shot.</em></p>
+              <small>Come curious / Leave confident</small>
+            </aside>
+
+            <figure className="gallery-journal__item gallery-journal__item--range" data-gallery-reveal>
+              <button type="button" onClick={(event) => openLightbox(4, event)} aria-label={`Open ${journalImages[1].location}, ${journalImages[1].moment} photo`}>
+                <img src={journalImages[1].src} alt={journalImages[1].alt} width={journalImages[1].width} height={journalImages[1].height} loading="lazy" />
+                <span>View full frame <Arrow diagonal /></span>
+              </button>
+              <figcaption><span>{journalImages[1].location} / {journalImages[1].moment}</span><span>{journalImages[1].number}</span></figcaption>
+            </figure>
+
+            <figure className="gallery-journal__item gallery-journal__item--gear" data-gallery-reveal>
+              <button type="button" onClick={(event) => openLightbox(5, event)} aria-label={`Open ${journalImages[2].location}, ${journalImages[2].moment} photo`}>
+                <img src={journalImages[2].src} alt={journalImages[2].alt} width={journalImages[2].width} height={journalImages[2].height} loading="lazy" />
+                <span>View full frame <Arrow diagonal /></span>
+              </button>
+              <figcaption><span>{journalImages[2].location} / {journalImages[2].moment}</span><span>{journalImages[2].number}</span></figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section className="gallery-invitation" data-gallery-invitation data-gallery-section aria-labelledby="gallery-invitation-heading">
+        <div className="gallery-invitation__inner">
+          <p className="eyebrow" data-gallery-reveal><span />02 / Your turn</p>
+          <h2 id="gallery-invitation-heading" data-gallery-reveal>Your turn.<br /><em>When you’re ready.</em></h2>
+          <div className="gallery-invitation__copy" data-gallery-reveal>
+            <p>No experience needed. Just bring your curiosity and take the first step.</p>
+            <a href="/events#event"><span>View the next shoot</span><Arrow /></a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter currentPage="gallery" />
+
+    {currentLightboxImage && <div className="gallery-lightbox" ref={lightbox} role="dialog" aria-modal="true" aria-labelledby="gallery-lightbox-title" onMouseDown={(event) => { if (event.target === event.currentTarget) setLightboxIndex(null); }}>
+      <h2 id="gallery-lightbox-title" className="visually-hidden">Gallery image viewer</h2>
+      <button className="gallery-lightbox__close" ref={closeButton} type="button" onClick={() => setLightboxIndex(null)}>Close <span aria-hidden="true">×</span></button>
+      <div className="gallery-lightbox__frame">
+        <img key={currentLightboxImage.src} src={currentLightboxImage.src} alt={currentLightboxImage.alt} width={currentLightboxImage.width} height={currentLightboxImage.height} />
+      </div>
+      <div className="gallery-lightbox__footer">
+        <p><strong>{currentLightboxImage.location}</strong><span>{currentLightboxImage.moment}</span></p>
+        <span>{currentLightboxImage.number} / 06</span>
+        <div>
+          <button type="button" onClick={() => setLightboxIndex((current) => current === null ? 0 : (current - 1 + galleryImages.length) % galleryImages.length)}>Previous</button>
+          <button type="button" onClick={() => setLightboxIndex((current) => current === null ? 0 : (current + 1) % galleryImages.length)}>Next</button>
+        </div>
+      </div>
+    </div>}
+  </div>;
+}
+
 function App() {
   const root = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
@@ -946,5 +1225,5 @@ function App() {
 const rootContainer = document.getElementById('root') as HTMLDivElement & { reactRoot?: Root };
 rootContainer.reactRoot ??= createRoot(rootContainer);
 const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
-const currentPage = currentPath === '/events' ? <EventsPage /> : currentPath === '/about' ? <AboutPage /> : <App />;
+const currentPage = currentPath === '/events' ? <EventsPage /> : currentPath === '/about' ? <AboutPage /> : currentPath === '/gallery' ? <GalleryPage /> : <App />;
 rootContainer.reactRoot.render(currentPage);
