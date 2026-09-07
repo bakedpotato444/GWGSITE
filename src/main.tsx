@@ -15,10 +15,15 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <svg className={diagonal ? 'arrow arrow--diagonal' : 'arrow'} viewBox="0 0 28 20" fill="none" aria-hidden="true"><path d="M2 10h23M17 3l7 7-7 7" /></svg>;
 }
 
-function Navigation({ light, onStory }: { light: boolean; onStory: (event: MouseEvent<HTMLAnchorElement>) => void }) {
+function Navigation({ light, currentPage = 'home', onStory }: { light: boolean; currentPage?: 'home' | 'events'; onStory?: (event: MouseEvent<HTMLAnchorElement>) => void }) {
   const [open, setOpen] = useState(false);
   const menu = useRef<HTMLElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
+  const navHref = (item: string) => {
+    if (item === 'Events') return currentPage === 'events' ? '#event' : '/events#event';
+    if (item === 'About') return currentPage === 'home' ? '#story' : '/#story';
+    return currentPage === 'home' ? '#explore' : '/#explore';
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -52,19 +57,19 @@ function Navigation({ light, onStory }: { light: boolean; onStory: (event: Mouse
 
   return (
     <header className={'site-header' + (light ? ' site-header--paper' : '') + (open ? ' site-header--open' : '')}>
-      <a className="brand" href="#top" aria-label="Girls With Guns Australia, home" onClick={() => setOpen(false)}>
+      <a className="brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home" onClick={() => setOpen(false)}>
         <strong className="brand__monogram">GWG</strong><span className="brand__divider" aria-hidden="true" />
         <span className="brand__text">Girls With<br />Guns Australia</span>
       </a>
       <nav ref={menu} id="primary-navigation" className={open ? 'nav nav--open' : 'nav'} aria-label="Primary navigation">
-        {navItems.map((item, index) => <a key={item} href={item === 'About' ? '#story' : '#prototype-end'} onClick={(event) => {
+        {navItems.map((item, index) => <a key={item} href={navHref(item)} aria-current={currentPage === 'events' && item === 'Events' ? 'page' : undefined} onClick={(event) => {
           setOpen(false);
-          if (item === 'About') onStory(event);
+          if (item === 'About' && currentPage === 'home') onStory?.(event);
         }} style={{ '--item-index': index } as CSSProperties}><span className="nav__number" aria-hidden="true">0{index + 1}</span>{item}</a>)}
-        <a className="nav__mobile-cta" href="#prototype-end" onClick={() => setOpen(false)}>Book next shoot <Arrow /></a>
+        <a className="nav__mobile-cta" href={currentPage === 'events' ? '#event-details' : '/events#event-details'} onClick={() => setOpen(false)}>Book next shoot <Arrow /></a>
         <p className="nav__signoff">Come curious. Leave confident.</p>
       </nav>
-      <a className="header-cta" href="#prototype-end"><span>Book next shoot</span><Arrow /></a>
+      <a className="header-cta" href={currentPage === 'events' ? '#event-details' : '/events#event-details'}><span>Book next shoot</span><Arrow /></a>
       <button ref={trigger} className="menu-button" type="button" aria-expanded={open} aria-controls="primary-navigation" aria-label={open ? 'Close menu' : 'Open menu'} onClick={() => setOpen(!open)}><span /><span /></button>
     </header>
   );
@@ -146,7 +151,7 @@ function EventCard() {
     <div className="event-card__topline"><p className="eyebrow">Next shoot</p><span className="event-card__availability"><i />Limited spots</span></div>
     <h2>Beaconsfield</h2>
     <div className="event-card__details"><p><DetailIcon />13 September</p><p><DetailIcon clock />10:30 AM</p></div>
-    <a href="#prototype-end" className="paper-button"><span>Book your spot</span><Arrow /></a>
+    <a href="/events#event-details" className="paper-button"><span>Book your spot</span><Arrow /></a>
     <span className="event-card__fold" aria-hidden="true" />
   </article></div>;
 }
@@ -204,7 +209,7 @@ function ExperienceSection() {
         <h2 id="experience-heading" data-experience-reveal>Never shot before?<br /><em>Perfect.</em></h2>
         <div className="experience-section__intro" data-experience-reveal>
           <p>No experience, no licence and no gear? That’s exactly what a GWG shoot day is built for. Everything is set up so your first time feels clear, guided and approachable.</p>
-          <a className="experience-cta" href="#prototype-end"><span>See what a GWG shoot day is like</span><Arrow /></a>
+          <a className="experience-cta" href="/events#day"><span>See what a GWG shoot day is like</span><Arrow /></a>
         </div>
       </header>
 
@@ -315,7 +320,7 @@ function FinalCta() {
               <div><dt>Date</dt><dd>13 September</dd></div>
               <div><dt>Start</dt><dd>10:30 AM</dd></div>
             </dl>
-            <a className="final-event__button" href="#prototype-end"><span>Book your spot</span><Arrow /></a>
+            <a className="final-event__button" href="/events#event-details"><span>Book your spot</span><Arrow /></a>
             <p className="final-event__note">Preview event details — booking link to be connected.</p>
           </article>
 
@@ -338,18 +343,234 @@ function FinalCta() {
   </section>;
 }
 
-function SiteFooter() {
+function SiteFooter({ currentPage = 'home' }: { currentPage?: 'home' | 'events' }) {
   return <footer className="site-footer">
     <div className="site-footer__inner">
-      <a className="footer-brand" href="#top" aria-label="Girls With Guns Australia, back to top"><strong>GWG</strong><span>Girls With<br />Guns Australia</span></a>
+      <a className="footer-brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home"><strong>GWG</strong><span>Girls With<br />Guns Australia</span></a>
       <nav className="footer-nav" aria-label="Footer navigation">
-        <a href="#prototype-end">Events</a><a href="#story">About</a><a href="#explore">Gallery</a><a href="#explore">Coaching</a><a href="#explore">Private Events</a><a href="#explore">Shop</a>
+        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'home' ? '#story' : '/#story'}>About</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Gallery</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Coaching</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
       </nav>
-      <div className="footer-social"><a href="#prototype-end">Instagram</a><a href="#prototype-end">Facebook</a></div>
+      <div className="footer-social"><a href={currentPage === 'home' ? '#prototype-end' : '/#prototype-end'}>Instagram</a><a href={currentPage === 'home' ? '#prototype-end' : '/#prototype-end'}>Facebook</a></div>
       <p className="site-footer__signoff">Come curious.<br /><em>Leave confident.</em></p>
-      <div className="site-footer__bottom"><span>© 2026 Girls With Guns Australia</span><span>Private homepage prototype</span><a href="#top">Back to top <Arrow /></a></div>
+      <div className="site-footer__bottom"><span>© 2026 Girls With Guns Australia</span><span>Private website prototype</span><a href="#top">Back to top <Arrow /></a></div>
     </div>
   </footer>;
+}
+
+const eventDaySteps = [
+  { number: '01', title: 'Safety briefing', detail: 'Meet the team, get fitted with safety gear and learn how the range works.' },
+  { number: '02', title: 'Target shooting', detail: 'Start slowly, settle in and build confidence with support close by.' },
+  { number: '03', title: 'Rifles & pistols', detail: 'Try both across the session, with clear guidance at every step.' },
+  { number: '04', title: 'Keep your target', detail: 'Take it home as proof that you gave something new a proper go.' },
+];
+
+const eventFaq = [
+  { question: 'Do I need a firearms licence?', answer: 'No. The current GWG event format is designed for complete beginners attending under range supervision. The live event listing will carry the final eligibility and range requirements.' },
+  { question: 'What if I have never shot before?', answer: 'That is completely fine. You will begin with a safety briefing, then work through the session with guidance from the range team.' },
+  { question: 'How old do you need to be?', answer: 'The current preview event is listed as ages 12+. Check the live event listing before booking, as age and range requirements can vary.' },
+  { question: 'What should I bring?', answer: 'Bring photo ID, enclosed shoes and water. The event listing will confirm anything else required for that particular range.' },
+  { question: 'Is the equipment provided?', answer: 'Yes. The current GWG format includes the firearms, ammunition and safety equipment used during the session.' },
+  { question: 'Can I come on my own?', answer: 'Absolutely. Plenty of women come because they want to try it without needing to organise a whole group first.' },
+];
+
+function EventsPage() {
+  const root = useRef<HTMLDivElement>(null);
+  const [lightHeader, setLightHeader] = useState(false);
+  const [bookingNote, setBookingNote] = useState(false);
+  const [joined, setJoined] = useState(false);
+  const [location, setLocation] = useState('');
+  const [distance, setDistance] = useState('');
+
+  useEffect(() => {
+    document.title = 'Events — Girls With Guns Australia';
+    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (description) description.content = 'Explore upcoming Girls With Guns Australia shoot days and see what to expect on the range.';
+  }, []);
+
+  const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    const hash = link?.getAttribute('href');
+    const destination = hash ? document.querySelector<HTMLElement>(hash) : null;
+    if (!hash || !destination) return;
+    event.preventDefault();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    gsap.to(window, { scrollTo: { y: destination, offsetY: 76, autoKill: true }, duration: reduced ? 0 : .72, ease: 'power2.inOut', overwrite: 'auto', onComplete: () => {
+      history.replaceState(null, '', hash);
+      destination.focus({ preventScroll: true });
+    } });
+  };
+
+  const previewBooking = () => setBookingNote(true);
+  const previewWaitlist = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setJoined(true);
+  };
+
+  useLayoutEffect(() => {
+    if (!root.current) return;
+    const scope = root.current;
+    const themedSections = [
+      { selector: '[data-events-dates]', light: true },
+      { selector: '[data-events-day]', light: true },
+      { selector: '[data-events-ready]', light: false },
+      { selector: '[data-events-faq]', light: true },
+      { selector: '[data-events-waitlist]', light: false },
+    ];
+    const syncHeaderTheme = () => {
+      let light = false;
+      themedSections.forEach(({ selector, light: sectionLight }) => {
+        const section = scope.querySelector<HTMLElement>(selector);
+        if (section && section.getBoundingClientRect().top <= 77) light = sectionLight;
+      });
+      setLightHeader(light);
+    };
+    const headerTrigger = ScrollTrigger.create({ start: 0, end: 'max', onUpdate: syncHeaderTheme, onRefresh: syncHeaderTheme });
+    const headerFrame = window.requestAnimationFrame(syncHeaderTheme);
+    const mm = gsap.matchMedia();
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const heroReveal = scope.querySelectorAll<HTMLElement>('[data-events-hero-reveal]');
+      const ticket = scope.querySelector<HTMLElement>('[data-events-ticket]');
+      const heroTimeline = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      heroTimeline.fromTo(heroReveal, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .48, stagger: .07 });
+      if (ticket) heroTimeline.fromTo(ticket, { opacity: 0, y: 22, rotation: -2.6 }, { opacity: 1, y: 0, rotation: -1.2, duration: .62, ease: 'power3.out' }, .12);
+
+      const sectionAnimations = Array.from(scope.querySelectorAll<HTMLElement>('[data-events-section]')).map((section) => {
+        const items = section.querySelectorAll<HTMLElement>('[data-events-reveal]');
+        if (!items.length) return null;
+        return gsap.fromTo(items, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .44, stagger: .065, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 82%', once: true } });
+      });
+      const refresh = () => ScrollTrigger.refresh();
+      document.fonts.ready.then(refresh);
+      window.addEventListener('load', refresh, { once: true });
+      return () => {
+        window.removeEventListener('load', refresh);
+        heroTimeline.kill();
+        sectionAnimations.forEach((animation) => animation?.kill());
+      };
+    }, scope);
+    return () => { window.cancelAnimationFrame(headerFrame); headerTrigger.kill(); mm.revert(); };
+  }, []);
+
+  return <div className="events-page app" ref={root} id="top" onClick={navigateSection}>
+    <a className="skip-link" href="#event-details">Skip to event details</a>
+    <Navigation light={lightHeader} currentPage="events" />
+    <main>
+      <section className="events-hero" id="event" aria-labelledby="events-heading" tabIndex={-1}>
+        <img className="events-hero__image" src="/gwg-range-wide.webp" alt="Women taking part in a Girls With Guns shoot day at the range" width="1600" height="1200" fetchPriority="high" />
+        <div className="events-hero__shade" aria-hidden="true" />
+        <div className="events-hero__inner">
+          <div className="events-hero__copy">
+            <p className="eyebrow" data-events-hero-reveal><span />Events / Girls With Guns Australia</p>
+            <h1 id="events-heading" data-events-hero-reveal>Your next shoot<br /><em>starts here.</em></h1>
+            <p className="events-hero__intro" data-events-hero-reveal>A guided range day for women who are curious, completely new to it, or ready to come back for another go.</p>
+            <a className="events-hero__jump" href="#day" data-events-hero-reveal>See what happens on the day <Arrow /></a>
+          </div>
+
+          <article className="events-ticket" id="event-details" data-events-ticket aria-labelledby="events-ticket-title" tabIndex={-1}>
+            <div className="events-ticket__topline"><span>Preview event details</span><span className="events-ticket__status"><i />Limited spots</span></div>
+            <p className="events-ticket__place">Next shoot / Victoria</p>
+            <h2 id="events-ticket-title">Beaconsfield</h2>
+            <dl className="events-ticket__details">
+              <div><dt>Date</dt><dd><time>13 September</time></dd></div>
+              <div><dt>Start</dt><dd><time>10:30 AM</time></dd></div>
+              <div><dt>Location</dt><dd>Beaconsfield</dd></div>
+              <div><dt>Price</dt><dd>To be confirmed</dd></div>
+            </dl>
+            <ul className="events-ticket__tags" aria-label="Event highlights"><li>Beginner friendly</li><li>Ages 12+</li><li>Equipment provided</li></ul>
+            <button className="events-ticket__button" type="button" onClick={previewBooking}><span>Book your spot</span><Arrow /></button>
+            {bookingNote ? <p className="events-ticket__note" role="status">Booking is not live in this prototype. The final button will open the confirmed event listing.</p> : <p className="events-ticket__note">Event details and booking link still need final confirmation.</p>}
+          </article>
+        </div>
+      </section>
+
+      <section className="events-dates" data-events-dates data-events-section aria-labelledby="events-dates-heading">
+        <div className="events-dates__inner">
+          <p className="eyebrow eyebrow--dark" data-events-reveal><span />More shoot dates</p>
+          <h2 id="events-dates-heading" data-events-reveal>The next one will<br /><em>appear here.</em></h2>
+          <p data-events-reveal>As new events are confirmed, this page will show the date, range, availability and booking link in one place.</p>
+          <a href="#waitlist" data-events-reveal>Tell GWG where to go next <Arrow /></a>
+        </div>
+      </section>
+
+      <section className="events-day" id="day" data-events-day data-events-section aria-labelledby="events-day-heading" tabIndex={-1}>
+        <div className="events-day__inner">
+          <header className="events-day__header">
+            <p className="eyebrow eyebrow--dark" data-events-reveal><span />02 / The day</p>
+            <h2 id="events-day-heading" data-events-reveal>A clear plan.<br /><em>No guesswork.</em></h2>
+            <p data-events-reveal>You will know what is happening before you step onto the range. The pace stays calm, the guidance stays close and there is room to ask questions.</p>
+          </header>
+          <figure className="events-day__photo" data-events-reveal>
+            <img src="/gwg-beaconsfield-wide.webp" alt="Girls With Guns participants together at Beaconsfield after a shoot" width="1536" height="1152" loading="lazy" />
+            <figcaption><span>Beaconsfield</span><span>After the shoot / 01</span></figcaption>
+          </figure>
+          <ol className="events-day__steps" aria-label="What happens at a Girls With Guns event">
+            {eventDaySteps.map(({ number, title, detail }) => <li key={number} data-events-reveal><span>{number}</span><h3>{title}</h3><p>{detail}</p></li>)}
+          </ol>
+        </div>
+      </section>
+
+      <section className="events-ready" data-events-ready data-events-section aria-labelledby="events-ready-heading">
+        <div className="events-ready__inner">
+          <div className="events-ready__copy">
+            <p className="eyebrow" data-events-reveal><span />03 / Good to know</p>
+            <h2 id="events-ready-heading" data-events-reveal>New to it?<br /><em>That’s the point.</em></h2>
+            <p data-events-reveal>GWG is built for the women who have wanted to try shooting but did not know where to begin, what to bring or who to go with.</p>
+            <dl className="events-ready__facts">
+              <div data-events-reveal><dt>01</dt><dd><strong>No experience needed</strong><span>Complete beginners are welcome.</span></dd></div>
+              <div data-events-reveal><dt>02</dt><dd><strong>No licence required</strong><span>For the current supervised event format.</span></dd></div>
+              <div data-events-reveal><dt>03</dt><dd><strong>Ages 12+</strong><span>Final requirements sit on the live listing.</span></dd></div>
+              <div data-events-reveal><dt>04</dt><dd><strong>Everything provided</strong><span>Equipment and safety gear are ready.</span></dd></div>
+            </dl>
+          </div>
+          <div className="events-ready__visual" data-events-reveal>
+            <figure><img src="/gwg-safety-gear.webp" alt="Pink hearing protection and safety glasses prepared for participants" width="1000" height="1333" loading="lazy" /><figcaption>Safety gear / Ready for you</figcaption></figure>
+            <aside className="events-bring" aria-labelledby="events-bring-heading">
+              <p>Before you leave home</p><h3 id="events-bring-heading">What to bring</h3>
+              <ul><li><span>01</span>Photo ID</li><li><span>02</span>Enclosed shoes</li><li><span>03</span>Water recommended</li></ul>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section className="events-faq" data-events-faq data-events-section aria-labelledby="events-faq-heading">
+        <div className="events-faq__inner">
+          <header>
+            <p className="eyebrow eyebrow--dark" data-events-reveal><span />04 / Before you book</p>
+            <h2 id="events-faq-heading" data-events-reveal>Questions are<br /><em>welcome.</em></h2>
+            <p data-events-reveal>If something still feels unclear, start here. Final range-specific information will always sit on the live event listing.</p>
+          </header>
+          <div className="events-faq__list" data-events-reveal>
+            {eventFaq.map(({ question, answer }) => <details key={question}><summary>{question}<span aria-hidden="true" /></summary><p>{answer}</p></details>)}
+          </div>
+          <p className="events-faq__note" data-events-reveal>Prototype content: the event date, availability and eligibility details still need final confirmation.</p>
+        </div>
+      </section>
+
+      <section className="events-waitlist" id="waitlist" data-events-waitlist data-events-section aria-labelledby="events-waitlist-heading" tabIndex={-1}>
+        <div className="events-waitlist__inner">
+          <header>
+            <p className="eyebrow" data-events-reveal><span />05 / Your area</p>
+            <h2 id="events-waitlist-heading" data-events-reveal>Not near<br />Beaconsfield?<br /><em>Tell GWG.</em></h2>
+          </header>
+          <div className="events-waitlist__form" data-events-reveal>
+            <h3>Where should the next shoot be?</h3>
+            <p>Add your suburb or postcode and how far you would travel. When a suitable date opens nearby, GWG can let you know.</p>
+            {joined ? <div className="waitlist-success" role="status">
+              <span>Preview complete</span><strong>That’s the success state.</strong><p>No details were submitted or saved.</p>
+              <button type="button" onClick={() => setJoined(false)}>Try the form again</button>
+            </div> : <form className="waitlist-form" onSubmit={previewWaitlist}>
+              <label><span>Suburb or postcode</span><input name="location" type="text" autoComplete="postal-code" placeholder="e.g. Pakenham 3810" value={location} onChange={(event) => setLocation(event.target.value)} required /></label>
+              <label><span>Travel distance</span><select name="distance" value={distance} onChange={(event) => setDistance(event.target.value)} required><option value="" disabled>Select distance</option><option value="30">Up to 30 km</option><option value="60">Up to 60 km</option><option value="100">Up to 100 km</option><option value="anywhere">Happy to travel</option></select></label>
+              <button type="submit"><span>Join the waitlist</span><Arrow /></button>
+              <small>Prototype only — these details are not submitted yet.</small>
+            </form>}
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter currentPage="events" />
+  </div>;
 }
 
 function App() {
@@ -549,4 +770,5 @@ function App() {
 
 const rootContainer = document.getElementById('root') as HTMLDivElement & { reactRoot?: Root };
 rootContainer.reactRoot ??= createRoot(rootContainer);
-rootContainer.reactRoot.render(<App />);
+const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+rootContainer.reactRoot.render(currentPath === '/events' ? <EventsPage /> : <App />);
