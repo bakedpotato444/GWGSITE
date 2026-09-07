@@ -39,3 +39,10 @@ Preserves the agreed physical target, centred bullseye, range retraction, overla
 - Replaced the soft radial glow and centre seam with matte charcoal grain and a crisp, off-centre scoring-ring motif so the background reads as intentional rather than blurred.
 - Kept the complete section visible without animation when reduced motion is preferred.
 - The experience CTA remains a prototype anchor until the dedicated experience or events destination is built.
+
+## Homepage section 04 — Explore GWG
+
+- Added the approved editorial navigation for Gallery, 1-on-1 Coaching, Private Events and Shop GWG.
+- Desktop uses a visible numbered contents list with a responsive image preview that changes on hover or keyboard focus; mobile places the relevant visual directly inside every destination row.
+- The Shop preview remains a typographic brand treatment until approved merch photography is available, avoiding a misleading product placeholder.
+- Destination links remain prototype anchors until their dedicated pages are built.

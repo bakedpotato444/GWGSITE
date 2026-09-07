@@ -237,6 +237,61 @@ function ExperienceSection() {
   </section>;
 }
 
+const exploreItems = [
+  { title: 'Gallery', detail: 'Real shoot-day imagery.', image: '/gwg-target-group.webp', position: 'center 42%' },
+  { title: '1-on-1 Coaching', detail: 'Learn at your own pace.', image: '/gwg-participant-portrait.webp', position: '51% 25%' },
+  { title: 'Private Events', detail: 'Hens, birthdays, teams.', image: '/gwg-beaconsfield-group.webp', position: 'center 43%' },
+  { title: 'Shop GWG', detail: 'Merch.', image: null, position: 'center' },
+];
+
+function ExploreVisual({ item, mobile = false }: { item: typeof exploreItems[number]; mobile?: boolean }) {
+  if (!item.image) return <span className={(mobile ? 'explore-row__mobile-visual ' : 'explore-preview__brand ') + 'explore-brand-visual'} aria-hidden="true">
+    <span>Girls With</span><strong>GWG</strong><small>Australia / Shop</small>
+  </span>;
+  return <span className={mobile ? 'explore-row__mobile-visual' : 'explore-preview__image'} aria-hidden="true">
+    <img src={item.image} alt="" width="1440" height="1224" loading="lazy" style={{ objectPosition: item.position }} />
+  </span>;
+}
+
+function ExploreSection() {
+  const [active, setActive] = useState(0);
+  return <section className="explore-section" id="explore" data-explore aria-labelledby="explore-heading">
+    <div className="explore-section__inner">
+      <header className="explore-section__header">
+        <p className="eyebrow eyebrow--dark explore-section__eyebrow" data-explore-reveal><span />04 / Explore GWG</p>
+        <h2 id="explore-heading" data-explore-reveal>Start wherever<br /><em>feels right.</em></h2>
+        <p data-explore-reveal>See the shoot days, build confidence one-on-one, bring your own group or head to the shop.</p>
+      </header>
+
+      <div className="explore-section__layout">
+        <nav className="explore-list" aria-label="Explore Girls With Guns">
+          {exploreItems.map((item, index) => <a
+            className={'explore-row' + (active === index ? ' explore-row--active' : '')}
+            href="#prototype-end"
+            key={item.title}
+            data-explore-row
+            onMouseEnter={() => setActive(index)}
+            onFocus={() => setActive(index)}
+          >
+            <span className="explore-row__number">0{index + 1}</span>
+            <span className="explore-row__copy"><strong>{item.title}</strong><small>{item.detail}</small></span>
+            <Arrow diagonal />
+            <ExploreVisual item={item} mobile />
+          </a>)}
+        </nav>
+
+        <div className="explore-preview" data-explore-preview aria-hidden="true">
+          {exploreItems.map((item, index) => <span className={'explore-preview__layer' + (active === index ? ' explore-preview__layer--active' : '')} key={item.title}>
+            <ExploreVisual item={item} />
+            <span className="explore-preview__caption"><i>GWG</i><b>0{index + 1} / 04</b></span>
+          </span>)}
+        </div>
+      </div>
+      <div className="explore-section__folio" aria-hidden="true"><span>Contents / Girls With Guns Australia</span><span>Choose your next step</span></div>
+    </div>
+  </section>;
+}
+
 function App() {
   const root = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
@@ -282,6 +337,8 @@ function App() {
     const hero = app.querySelector<HTMLElement>('[data-hero]')!;
     const story = app.querySelector<HTMLElement>('[data-story]')!;
     const experienceSection = app.querySelector<HTMLElement>('[data-experience]');
+    const exploreSection = app.querySelector<HTMLElement>('[data-explore]');
+    const prototypeEnd = app.querySelector<HTMLElement>('#prototype-end');
     const rig = app.querySelector<HTMLElement>('[data-target-rig]')!;
     const mm = gsap.matchMedia();
     let alive = true;
@@ -348,6 +405,20 @@ function App() {
       onLeaveBack: () => setLightHeader(true),
     }) : null;
 
+    const exploreHeader = exploreSection ? ScrollTrigger.create({
+      trigger: exploreSection,
+      start: 'top 76px',
+      onEnter: () => setLightHeader(true),
+      onLeaveBack: () => setLightHeader(false),
+    }) : null;
+
+    const endHeader = prototypeEnd ? ScrollTrigger.create({
+      trigger: prototypeEnd,
+      start: 'top 76px',
+      onEnter: () => setLightHeader(false),
+      onLeaveBack: () => setLightHeader(true),
+    }) : null;
+
     mm.add('(prefers-reduced-motion: no-preference)', () => {
       if (!experienceSection) return;
       const reveals = experienceSection.querySelectorAll<HTMLElement>('[data-experience-reveal]');
@@ -363,10 +434,22 @@ function App() {
       return () => reveal.kill();
     }, root);
 
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      if (!exploreSection) return;
+      const reveals = exploreSection.querySelectorAll<HTMLElement>('[data-explore-reveal]');
+      const rows = exploreSection.querySelectorAll<HTMLElement>('[data-explore-row]');
+      const preview = exploreSection.querySelector<HTMLElement>('[data-explore-preview]');
+      const reveal = gsap.timeline({ scrollTrigger: { trigger: exploreSection, start: 'top 78%', once: true } });
+      reveal.fromTo(reveals, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .42, stagger: .07, ease: 'power2.out' });
+      if (preview) reveal.fromTo(preview, { clipPath: 'inset(5% 5% 5% 5%)', scale: 1.025 }, { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: .58, ease: 'power2.out' }, .08);
+      reveal.fromTo(rows, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .36, stagger: .065, ease: 'power1.out' }, .2);
+      return () => reveal.kill();
+    }, root);
+
     const restoreHash = window.setTimeout(() => {
       if (location.hash === '#story' && experience.current) window.scrollTo({ top: experience.current.end, behavior: 'instant' });
     }, 150);
-    return () => { alive = false; window.clearTimeout(restoreHash); experienceHeader?.kill(); mm.revert(); };
+    return () => { alive = false; window.clearTimeout(restoreHash); experienceHeader?.kill(); exploreHeader?.kill(); endHeader?.kill(); mm.revert(); };
   }, []);
 
   return <div className="app" ref={root} id="top" onClick={navigatePreview}>
@@ -386,9 +469,10 @@ function App() {
         <StoryPanel />
       </div></div>
       <ExperienceSection />
+      <ExploreSection />
       <section className="prototype-end" id="prototype-end" aria-labelledby="prototype-end-title">
         <div><p className="eyebrow">GWG / Homepage preview</p><h2 id="prototype-end-title">A first look.<br /><em>A new beginning.</em></h2></div>
-        <div className="prototype-end__note"><p>You’re exploring the hero, our story and the GWG experience. Bookings, the full gallery and the rest of the site are still to come.</p><a className="story-cta" href="#top"><span>Back to the range</span><Arrow /></a></div>
+        <div className="prototype-end__note"><p>You’re exploring the hero, our story, the GWG experience and the site’s main pathways. Bookings, the full gallery and dedicated pages are still to come.</p><a className="story-cta" href="#top"><span>Back to the range</span><Arrow /></a></div>
       </section>
     </main>
   </div>;
