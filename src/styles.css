@@ -529,6 +529,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .event-position { width: 245px; left: 25px; right: auto; bottom: 56px; }
   .event-card h2 { font-size: 2.4rem; }
   .gallery-position { display: none; }
+  .effects-toggle { top: 84px; right: 18px; bottom: auto; }
   .story-panel__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; }
   .story-panel__media { height: auto; min-height: 400px; }
 }
