@@ -178,8 +178,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .story-panel__folio { position: absolute; bottom: 24px; inset-inline: 6vw; display: flex; align-items: center; justify-content: space-between; gap: 20px; color: #786957; font-size: .66rem; letter-spacing: .13em; text-transform: uppercase; }
 .story-panel__folio span:nth-child(2) { text-transform: none; font: italic 500 1.1rem/1 var(--serif); letter-spacing: 0; }
 
-.experience-section { position: relative; z-index: 13; overflow: clip; color: var(--white); background: var(--grain), radial-gradient(circle at 78% 16%, #49233152, transparent 30%), #151214; }
-.experience-section::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent 49.94%, #f4e9dc0b 50%, transparent 50.06%); }
+.experience-section { position: relative; z-index: 13; overflow: clip; color: var(--white); background: linear-gradient(#151214ed, #151214ed), var(--grain), #151214; }
+.experience-section::before {
+  content: ''; position: absolute; top: clamp(210px, 19vw, 330px); right: clamp(-470px, -27vw, -300px); width: min(72vw, 1040px); aspect-ratio: 1; border-radius: 50%; pointer-events: none; opacity: .58;
+  background: repeating-radial-gradient(circle, transparent 0 11.65%, #ebdce213 11.72% 11.84%, transparent 11.92% 23.45%);
+}
 .experience-section__inner { position: relative; max-width: 1660px; margin: auto; padding: clamp(112px, 9vw, 158px) 6vw clamp(92px, 8vw, 132px); }
 .experience-section__header { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(300px, .62fr); column-gap: clamp(55px, 8vw, 142px); align-items: end; }
 .experience-section__eyebrow { grid-column: 1 / -1; display: flex; align-items: center; gap: 13px; margin: 0 0 29px; color: #dca5b8; }
@@ -321,6 +324,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .story-panel__folio { bottom: 24px; inset-inline: 26px; font-size: .57rem; }
   .story-panel__folio span:nth-child(2) { display: none; }
   .experience-section__inner { padding: 101px 24px 83px; }
+  .experience-section::before { top: 390px; right: -430px; width: 680px; opacity: .46; }
   .experience-section__header { display: block; }
   .experience-section__eyebrow { margin-bottom: 23px; font-size: .7rem; }
   .experience-section h2 { max-width: 600px; font-size: clamp(3.55rem, 15vw, 5rem); line-height: .88; }

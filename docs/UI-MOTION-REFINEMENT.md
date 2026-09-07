@@ -36,5 +36,6 @@ Preserves the agreed physical target, centred bullseye, range retraction, overla
 
 - Added the agreed “Never shot before? Perfect.” message, four beginner reassurances and three-part shoot-day sequence from “mums site”.
 - Used a dark editorial break after the calmer story section, with restrained image and content reveals on viewport entry.
+- Replaced the soft radial glow and centre seam with matte charcoal grain and a crisp, off-centre scoring-ring motif so the background reads as intentional rather than blurred.
 - Kept the complete section visible without animation when reduced motion is preferred.
 - The experience CTA remains a prototype anchor until the dedicated experience or events destination is built.
