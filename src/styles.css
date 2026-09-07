@@ -527,11 +527,15 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .gallery-featured { position: relative; min-width: 0; min-height: 620px; overflow: hidden; background: #211b1e; box-shadow: 0 31px 72px #0009; }
 .gallery-featured::after { content: ''; position: absolute; z-index: 3; inset: 0; box-shadow: inset 0 0 0 1px #fff8ec20; pointer-events: none; }
 .gallery-featured__stage { position: absolute; inset: 0 0 82px; overflow: hidden; }
-.gallery-featured__slide { position: absolute; inset: 0; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: 0; background: #201a1d; opacity: 0; transform: translateX(3.5%) scale(1.025); pointer-events: none; transition: opacity 620ms ease, transform 850ms var(--ease); }
+.gallery-featured__slide { position: absolute; top: 0; bottom: 0; left: 13%; display: block; width: 74%; padding: 0; overflow: hidden; border: 0; background: #201a1d; box-shadow: 0 20px 55px #000b; opacity: 0; transform: scale(.86); pointer-events: none; transition: opacity 430ms ease, transform 680ms var(--ease), filter 430ms ease; }
 .gallery-featured__slide::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #100d0f38, transparent 35%), linear-gradient(0deg, #0b090bc4, transparent 31%); pointer-events: none; }
-.gallery-featured__slide--active { z-index: 1; opacity: 1; transform: none; pointer-events: auto; }
+.gallery-featured__slide--previous, .gallery-featured__slide--next { z-index: 1; opacity: .52; pointer-events: auto; cursor: pointer; filter: brightness(.58) saturate(.55); }
+.gallery-featured__slide--previous { transform: translateX(-91%) scale(.9); }
+.gallery-featured__slide--next { transform: translateX(91%) scale(.9); }
+.gallery-featured__slide--active { z-index: 2; opacity: 1; transform: none; pointer-events: auto; filter: none; }
 .gallery-featured__slide img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(.72) brightness(.82) contrast(1.06); transition: transform 800ms var(--ease), filter 400ms; }
 .gallery-featured__open { position: absolute; z-index: 2; right: 24px; bottom: 22px; display: flex; align-items: center; gap: 13px; min-height: 44px; color: #eee3e0; font-size: .63rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.gallery-featured__slide:not(.gallery-featured__slide--active) .gallery-featured__open { opacity: 0; }
 .gallery-featured__open .arrow { width: 20px; }
 .gallery-featured__meta { position: absolute; z-index: 4; inset: auto 0 0; display: flex; align-items: center; justify-content: space-between; gap: 25px; height: 82px; padding: 0 25px; color: #d9cbcf; background: linear-gradient(90deg, #161215, #100d0f); }
 .gallery-featured__meta p { display: grid; gap: 3px; margin: 0; font: italic 500 1.25rem/1 var(--serif); }
@@ -546,7 +550,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 @keyframes gallery-progress { to { transform: scaleX(1); } }
 
 .gallery-journal { position: relative; overflow: hidden; color: var(--ink); background: var(--grain), #eae1d2; }
-.gallery-journal::before { content: '06'; position: absolute; top: -.1em; right: -.01em; color: #74564108; font: 600 min(29vw, 440px)/.9 var(--serif); letter-spacing: -.08em; pointer-events: none; }
+.gallery-journal::before { content: '13'; position: absolute; top: -.1em; right: -.01em; color: #74564108; font: 600 min(29vw, 440px)/.9 var(--serif); letter-spacing: -.08em; pointer-events: none; }
 .gallery-journal__inner { position: relative; z-index: 1; max-width: 1660px; margin: auto; padding: clamp(116px, 9vw, 158px) 6vw clamp(125px, 10vw, 175px); }
 .gallery-journal__header { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(350px, .55fr); align-items: end; column-gap: clamp(65px, 10vw, 165px); }
 .gallery-journal__header > .eyebrow { grid-column: 1 / -1; margin-bottom: 29px; }
@@ -568,6 +572,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .gallery-journal__item--wide { grid-column: 1 / 9; transform: rotate(-.55deg); }
 .gallery-journal__item--range { grid-column: 2 / 7; margin-top: 18px; transform: rotate(.45deg); }
 .gallery-journal__item--gear { grid-column: 8 / 12; margin-top: clamp(95px, 9vw, 145px); transform: rotate(-.7deg); }
+.gallery-journal__item--sweep { grid-column: 4 / 13; margin-top: clamp(38px, 5vw, 78px); transform: rotate(.42deg); }
+.gallery-journal__item--portrait { grid-column: 1 / 5; margin-top: clamp(105px, 9vw, 150px); transform: rotate(-.78deg); }
+.gallery-journal__item--duo { grid-column: 6 / 13; margin-top: 27px; transform: rotate(.36deg); }
+.gallery-journal__item--closing { grid-column: 1 / 8; margin-top: clamp(52px, 5vw, 82px); transform: rotate(-.4deg); }
+.gallery-journal__item--detail { grid-column: 9 / 13; margin-top: clamp(118px, 10vw, 168px); transform: rotate(.7deg); }
 .gallery-journal__note { grid-column: 9 / 13; align-self: center; margin: 1vw 0 0; padding: clamp(36px, 4vw, 63px) clamp(28px, 3vw, 48px); color: #302622; border-top: 1px solid #60493842; border-bottom: 1px solid #60493842; transform: rotate(1.2deg); }
 .gallery-journal__note > span, .gallery-journal__note small { display: block; color: var(--pink-deep); font-size: .59rem; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
 .gallery-journal__note p { margin: 24px 0 31px; font: 500 clamp(2.55rem, 3.5vw, 3.75rem)/.93 var(--serif); letter-spacing: -.035em; }
@@ -603,7 +612,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .about-invitation__primary:hover { background-color: #f1a6bf; }
   .about-invitation__primary:hover .arrow { transform: translateX(4px); }
   .gallery-hero__jump:hover .arrow, .gallery-invitation__copy > a:hover .arrow { transform: translateX(4px); }
-  .gallery-featured__slide:hover img { transform: scale(1.02); filter: saturate(.82) brightness(.86) contrast(1.05); }
+  .gallery-featured__slide--active:hover img { transform: scale(1.02); filter: saturate(.82) brightness(.86) contrast(1.05); }
   .gallery-featured__controls button:not(:disabled):hover, .gallery-lightbox button:hover { color: var(--pink-bright); background: #fff1; }
   .gallery-journal__item button:hover img { transform: scale(1.018); filter: saturate(.88) contrast(1.025) brightness(.93); }
   .gallery-journal__item button:hover > span { opacity: 1; transform: none; }
@@ -1029,7 +1038,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .gallery-hero__jump { margin-top: 20px; font-size: .7rem; }
   .gallery-featured { width: calc(100% + 48px); height: clamp(470px, 68svh, 610px); min-height: 0; margin: 53px -24px 0; box-shadow: none; }
   .gallery-featured__stage { bottom: 104px; }
-  .gallery-featured__slide { transform: scale(1.02); }
+  .gallery-featured__slide { left: 9%; width: 82%; }
+  .gallery-featured__slide--previous { transform: translateX(-91%) scale(.9); }
+  .gallery-featured__slide--next { transform: translateX(91%) scale(.9); }
   .gallery-featured__slide--active { transform: none; }
   .gallery-featured__open { right: 17px; bottom: 14px; }
   .gallery-featured__meta { display: grid; grid-template-columns: 1fr; align-content: center; gap: 4px; height: 104px; padding: 9px 16px 8px; }
@@ -1057,6 +1068,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .gallery-journal__note p { margin-block: 22px 28px; font-size: clamp(2.65rem, 12vw, 3.7rem); }
   .gallery-journal__item--range { width: calc(100% - 22px); margin: 65px 22px 0 0; transform: rotate(.35deg); }
   .gallery-journal__item--gear { width: 77%; margin: 68px 0 0 auto; transform: rotate(-.55deg); }
+  .gallery-journal__item--sweep { width: 100%; margin: 68px 0 0; transform: rotate(.38deg); }
+  .gallery-journal__item--portrait { width: 78%; margin: 70px auto 0 0; transform: rotate(-.6deg); }
+  .gallery-journal__item--duo { width: calc(100% - 14px); margin: 69px 0 0 14px; transform: rotate(.3deg); }
+  .gallery-journal__item--closing { width: 100%; margin: 70px 0 0; transform: rotate(-.38deg); }
+  .gallery-journal__item--detail { width: 79%; margin: 69px 0 0 auto; transform: rotate(.55deg); }
 
   .gallery-invitation__inner { display: block; padding: 101px 24px 104px; }
   .gallery-invitation::after { top: 11px; font-size: 60vw; }

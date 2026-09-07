@@ -761,26 +761,63 @@ const galleryImages = [
     location: 'Bendigo', moment: 'First-time confidence', number: '02', width: 1200, height: 1020, position: '50% 38%',
   },
   {
+    src: '/gwg-sale-pistol.webp',
+    alt: 'A Girls With Guns participant firing a pistol under an instructor’s supervision at Sale Pistol Club',
+    location: 'Sale', moment: 'First shot at the line', number: '03', width: 2000, height: 1500, position: '43% 50%',
+  },
+  {
     src: '/gwg-target-group.webp',
     alt: 'Three Girls With Guns participants holding their paper targets together at Bendigo',
-    location: 'Bendigo', moment: 'Targets worth keeping', number: '03', width: 1400, height: 1189, position: '50% 42%',
+    location: 'Bendigo', moment: 'Targets worth keeping', number: '04', width: 1400, height: 1189, position: '50% 42%',
+  },
+  {
+    src: '/gwg-sale-rifle.webp',
+    alt: 'A Girls With Guns participant trying a scoped rifle with an instructor at Sale Pistol Club',
+    location: 'Sale', moment: 'Trying the rifle line', number: '05', width: 2000, height: 1500, position: '72% 50%',
   },
   {
     src: '/gwg-beaconsfield-group.webp',
     alt: 'Five Girls With Guns participants holding targets and pink safety gear at Beaconsfield',
-    location: 'Beaconsfield', moment: 'The group shot', number: '04', width: 1600, height: 1200, position: '50% 44%',
+    location: 'Beaconsfield', moment: 'The group shot', number: '06', width: 1600, height: 1200, position: '50% 44%',
+  },
+  {
+    src: '/gwg-sale-group.webp',
+    alt: 'A large group of Girls With Guns participants smiling with their targets after a Sale shoot day',
+    location: 'Sale', moment: 'Targets up', number: '07', width: 2000, height: 1500, position: '50% 50%',
   },
   {
     src: '/gwg-range-wide.webp',
     alt: 'Girls With Guns participants gathered inside the Bendigo range shelter between turns',
-    location: 'Bendigo', moment: 'Between turns', number: '05', width: 1400, height: 1190, position: '44% 50%',
+    location: 'Bendigo', moment: 'Between turns', number: '08', width: 1400, height: 1190, position: '44% 50%',
+  },
+  {
+    src: '/gwg-sale-targets.webp',
+    alt: 'Four Girls With Guns participants holding their paper targets at Sale Pistol Club',
+    location: 'Sale', moment: 'The proof comes home', number: '09', width: 2000, height: 1500, position: '50% 50%',
   },
   {
     src: '/gwg-safety-gear.webp',
     alt: 'Rows of pink hearing protection and safety glasses laid out before an Echuca shoot',
-    location: 'Echuca', moment: 'Ready at the line', number: '06', width: 1000, height: 1333, position: '50% 50%',
+    location: 'Echuca', moment: 'Ready at the line', number: '10', width: 1000, height: 1333, position: '50% 50%',
+  },
+  {
+    src: '/gwg-sale-team-selfie.webp',
+    alt: 'Three smiling Girls With Guns team members together at Sale Pistol Club',
+    location: 'Sale', moment: 'Morning at the club', number: '11', width: 2000, height: 1500, position: '50% 50%',
+  },
+  {
+    src: '/gwg-sale-instructors.webp',
+    alt: 'The Girls With Guns instructor team standing together at Sale Pistol Club',
+    location: 'Sale', moment: 'The instructor team', number: '12', width: 2000, height: 1500, position: '50% 50%',
+  },
+  {
+    src: '/gwg-sale-team-backs.webp',
+    alt: 'The Girls With Guns team showing their branded shirts against the Sale range wall',
+    location: 'Sale', moment: 'GWG on tour', number: '13', width: 2000, height: 1500, position: '50% 50%',
   },
 ] as const;
+
+const galleryJournalLayouts = ['wide', 'range', 'gear', 'sweep', 'portrait', 'duo', 'closing', 'detail'] as const;
 
 function GalleryPage() {
   const root = useRef<HTMLDivElement>(null);
@@ -792,9 +829,20 @@ function GalleryPage() {
   const [carouselPaused, setCarouselPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const featuredImages = galleryImages.slice(0, 3);
-  const journalImages = galleryImages.slice(3);
+  const featuredImages = galleryImages.slice(0, 5);
+  const journalImages = galleryImages.slice(featuredImages.length);
+  const galleryCount = String(galleryImages.length).padStart(2, '0');
+  const featuredCount = String(featuredImages.length).padStart(2, '0');
+  const locationCount = String(new Set(galleryImages.map((image) => image.location)).size).padStart(2, '0');
   const lightboxOpen = lightboxIndex !== null;
+
+  const featurePosition = (index: number) => {
+    const distance = (index - activeFeature + featuredImages.length) % featuredImages.length;
+    if (distance === 0) return 'active';
+    if (distance === 1) return 'next';
+    if (distance === featuredImages.length - 1) return 'previous';
+    return 'hidden';
+  };
 
   useEffect(() => {
     document.title = 'Gallery — Girls With Guns Australia';
@@ -927,22 +975,28 @@ function GalleryPage() {
             onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setCarouselPaused(false); }}
           >
             <div className="gallery-featured__stage">
-              {featuredImages.map((image, index) => <button
-                className={'gallery-featured__slide' + (activeFeature === index ? ' gallery-featured__slide--active' : '')}
-                type="button"
-                key={image.src}
-                tabIndex={activeFeature === index ? 0 : -1}
-                aria-label={`Open ${image.location}, ${image.moment} photo`}
-                onClick={(event) => openLightbox(index, event)}
-              >
-                <img src={image.src} alt={image.alt} width={image.width} height={image.height} fetchPriority={index === 0 ? 'high' : undefined} style={{ objectPosition: image.position }} />
-                <span className="gallery-featured__open">Open frame <Arrow diagonal /></span>
-              </button>)}
+              {featuredImages.map((image, index) => {
+                const position = featurePosition(index);
+                const isActive = position === 'active';
+                return <button
+                  className={`gallery-featured__slide gallery-featured__slide--${position}`}
+                  type="button"
+                  key={image.src}
+                  tabIndex={position === 'hidden' ? -1 : 0}
+                  aria-hidden={position === 'hidden'}
+                  aria-current={isActive ? 'true' : undefined}
+                  aria-label={isActive ? `Open ${image.location}, ${image.moment} photo` : `Show ${image.location}, ${image.moment} photo`}
+                  onClick={(event) => isActive ? openLightbox(index, event) : setActiveFeature(index)}
+                >
+                  <img src={image.src} alt={image.alt} width={image.width} height={image.height} fetchPriority={index === 0 ? 'high' : undefined} style={{ objectPosition: image.position }} />
+                  <span className="gallery-featured__open">Open frame <Arrow diagonal /></span>
+                </button>;
+              })}
             </div>
             <div className="gallery-featured__meta">
               <p><span>{featuredImages[activeFeature].location}</span>{featuredImages[activeFeature].moment}</p>
               <div className="gallery-featured__controls">
-                <span className="gallery-featured__count">0{activeFeature + 1} / 03</span>
+                <span className="gallery-featured__count">{String(activeFeature + 1).padStart(2, '0')} / {featuredCount}</span>
                 <button type="button" aria-label="Previous featured photo" onClick={() => setActiveFeature((activeFeature - 1 + featuredImages.length) % featuredImages.length)}>Prev</button>
                 <button type="button" disabled={reduceMotion} aria-pressed={carouselPaused} onClick={() => setCarouselPaused(!carouselPaused)}>{reduceMotion ? 'Auto off' : carouselPaused ? 'Play' : 'Pause'}</button>
                 <button type="button" aria-label="Next featured photo" onClick={() => setActiveFeature((activeFeature + 1) % featuredImages.length)}>Next</button>
@@ -959,39 +1013,24 @@ function GalleryPage() {
             <p className="eyebrow eyebrow--dark" data-gallery-reveal><span />01 / The photo journal</p>
             <h2 id="gallery-journal-heading" data-gallery-reveal>A day at<br /><em>the range.</em></h2>
             <p data-gallery-reveal>There is the safety briefing, the concentration, the first shot—and then the smile when the target comes back.</p>
-            <dl data-gallery-reveal><div><dt>06</dt><dd>Real photographs</dd></div><div><dt>03</dt><dd>Victorian locations</dd></div></dl>
+            <dl data-gallery-reveal><div><dt>{galleryCount}</dt><dd>Real photographs</dd></div><div><dt>{locationCount}</dt><dd>Victorian locations</dd></div></dl>
           </header>
 
           <div className="gallery-journal__grid">
-            <figure className="gallery-journal__item gallery-journal__item--wide" data-gallery-reveal>
-              <button type="button" onClick={(event) => openLightbox(3, event)} aria-label={`Open ${journalImages[0].location}, ${journalImages[0].moment} photo`}>
-                <img src={journalImages[0].src} alt={journalImages[0].alt} width={journalImages[0].width} height={journalImages[0].height} loading="lazy" />
-                <span>View full frame <Arrow diagonal /></span>
-              </button>
-              <figcaption><span>{journalImages[0].location} / {journalImages[0].moment}</span><span>{journalImages[0].number}</span></figcaption>
-            </figure>
-
-            <aside className="gallery-journal__note" data-gallery-reveal aria-label="Girls With Guns gallery note">
-              <span>Between the frames</span>
-              <p>The nerves fade.<br />The questions start.<br /><em>Then someone takes<br />the first shot.</em></p>
-              <small>Come curious / Leave confident</small>
-            </aside>
-
-            <figure className="gallery-journal__item gallery-journal__item--range" data-gallery-reveal>
-              <button type="button" onClick={(event) => openLightbox(4, event)} aria-label={`Open ${journalImages[1].location}, ${journalImages[1].moment} photo`}>
-                <img src={journalImages[1].src} alt={journalImages[1].alt} width={journalImages[1].width} height={journalImages[1].height} loading="lazy" />
-                <span>View full frame <Arrow diagonal /></span>
-              </button>
-              <figcaption><span>{journalImages[1].location} / {journalImages[1].moment}</span><span>{journalImages[1].number}</span></figcaption>
-            </figure>
-
-            <figure className="gallery-journal__item gallery-journal__item--gear" data-gallery-reveal>
-              <button type="button" onClick={(event) => openLightbox(5, event)} aria-label={`Open ${journalImages[2].location}, ${journalImages[2].moment} photo`}>
-                <img src={journalImages[2].src} alt={journalImages[2].alt} width={journalImages[2].width} height={journalImages[2].height} loading="lazy" />
-                <span>View full frame <Arrow diagonal /></span>
-              </button>
-              <figcaption><span>{journalImages[2].location} / {journalImages[2].moment}</span><span>{journalImages[2].number}</span></figcaption>
-            </figure>
+            {journalImages.map((image, index) => [
+              <figure className={`gallery-journal__item gallery-journal__item--${galleryJournalLayouts[index]}`} data-gallery-reveal key={image.src}>
+                <button type="button" onClick={(event) => openLightbox(featuredImages.length + index, event)} aria-label={`Open ${image.location}, ${image.moment} photo`}>
+                  <img src={image.src} alt={image.alt} width={image.width} height={image.height} loading="lazy" />
+                  <span>View full frame <Arrow diagonal /></span>
+                </button>
+                <figcaption><span>{image.location} / {image.moment}</span><span>{image.number}</span></figcaption>
+              </figure>,
+              index === 0 ? <aside className="gallery-journal__note" data-gallery-reveal aria-label="Girls With Guns gallery note" key="gallery-note">
+                <span>Between the frames</span>
+                <p>The nerves fade.<br />The questions start.<br /><em>Then someone takes<br />the first shot.</em></p>
+                <small>Come curious / Leave confident</small>
+              </aside> : null,
+            ])}
           </div>
         </div>
       </section>
@@ -1017,7 +1056,7 @@ function GalleryPage() {
       </div>
       <div className="gallery-lightbox__footer">
         <p><strong>{currentLightboxImage.location}</strong><span>{currentLightboxImage.moment}</span></p>
-        <span>{currentLightboxImage.number} / 06</span>
+        <span>{currentLightboxImage.number} / {galleryCount}</span>
         <div>
           <button type="button" onClick={() => setLightboxIndex((current) => current === null ? 0 : (current - 1 + galleryImages.length) % galleryImages.length)}>Previous</button>
           <button type="button" onClick={() => setLightboxIndex((current) => current === null ? 0 : (current + 1) % galleryImages.length)}>Next</button>
