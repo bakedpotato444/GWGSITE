@@ -15,13 +15,15 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <svg className={diagonal ? 'arrow arrow--diagonal' : 'arrow'} viewBox="0 0 28 20" fill="none" aria-hidden="true"><path d="M2 10h23M17 3l7 7-7 7" /></svg>;
 }
 
-function Navigation({ light, currentPage = 'home', onStory }: { light: boolean; currentPage?: 'home' | 'events'; onStory?: (event: MouseEvent<HTMLAnchorElement>) => void }) {
+type SitePage = 'home' | 'events' | 'about';
+
+function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPage?: SitePage }) {
   const [open, setOpen] = useState(false);
   const menu = useRef<HTMLElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const navHref = (item: string) => {
     if (item === 'Events') return currentPage === 'events' ? '#event' : '/events#event';
-    if (item === 'About') return currentPage === 'home' ? '#story' : '/#story';
+    if (item === 'About') return currentPage === 'about' ? '#story' : '/about#story';
     return currentPage === 'home' ? '#explore' : '/#explore';
   };
 
@@ -62,10 +64,7 @@ function Navigation({ light, currentPage = 'home', onStory }: { light: boolean; 
         <span className="brand__text">Girls With<br />Guns Australia</span>
       </a>
       <nav ref={menu} id="primary-navigation" className={open ? 'nav nav--open' : 'nav'} aria-label="Primary navigation">
-        {navItems.map((item, index) => <a key={item} href={navHref(item)} aria-current={currentPage === 'events' && item === 'Events' ? 'page' : undefined} onClick={(event) => {
-          setOpen(false);
-          if (item === 'About' && currentPage === 'home') onStory?.(event);
-        }} style={{ '--item-index': index } as CSSProperties}><span className="nav__number" aria-hidden="true">0{index + 1}</span>{item}</a>)}
+        {navItems.map((item, index) => <a key={item} href={navHref(item)} aria-current={(currentPage === 'events' && item === 'Events') || (currentPage === 'about' && item === 'About') ? 'page' : undefined} onClick={() => setOpen(false)} style={{ '--item-index': index } as CSSProperties}><span className="nav__number" aria-hidden="true">0{index + 1}</span>{item}</a>)}
         <a className="nav__mobile-cta" href={currentPage === 'events' ? '#event-details' : '/events#event-details'} onClick={() => setOpen(false)}>Book next shoot <Arrow /></a>
         <p className="nav__signoff">Come curious. Leave confident.</p>
       </nav>
@@ -180,7 +179,7 @@ function StoryPanel() {
         <p className="eyebrow eyebrow--dark" data-story-reveal><span />Why GWG exists</p>
         <h2 id="story-heading" data-story-reveal>Always wanted<br className="desktop-break" /> to try.<br /><em>Never wanted<br className="desktop-break" /> to go alone.</em></h2>
         <p className="story-panel__body" data-story-reveal>Farrah kept meeting women who were curious about shooting, but felt intimidated by the environment or simply didn’t know where to start. Girls With Guns Australia grew from that gap.</p>
-        <a className="story-cta" href="#prototype-end" data-story-reveal><span>Meet Farrah &amp; read the story</span><Arrow diagonal /></a>
+        <a className="story-cta" href="/about#story" data-story-reveal><span>Meet Farrah &amp; read the story</span><Arrow diagonal /></a>
         <p className="story-panel__signature" data-story-reveal>Come curious. Leave confident.</p>
       </div>
     </div>
@@ -343,12 +342,12 @@ function FinalCta() {
   </section>;
 }
 
-function SiteFooter({ currentPage = 'home' }: { currentPage?: 'home' | 'events' }) {
+function SiteFooter({ currentPage = 'home' }: { currentPage?: SitePage }) {
   return <footer className="site-footer">
     <div className="site-footer__inner">
       <a className="footer-brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home"><strong>GWG</strong><span>Girls With<br />Guns Australia</span></a>
       <nav className="footer-nav" aria-label="Footer navigation">
-        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'home' ? '#story' : '/#story'}>About</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Gallery</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Coaching</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
+        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'about' ? '#story' : '/about#story'} aria-current={currentPage === 'about' ? 'page' : undefined}>About</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Gallery</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Coaching</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
       </nav>
       <div className="footer-social"><a href={currentPage === 'home' ? '#prototype-end' : '/#prototype-end'}>Instagram</a><a href={currentPage === 'home' ? '#prototype-end' : '/#prototype-end'}>Facebook</a></div>
       <p className="site-footer__signoff">Come curious.<br /><em>Leave confident.</em></p>
@@ -573,6 +572,182 @@ function EventsPage() {
   </div>;
 }
 
+const aboutPrinciples = [
+  { number: '01', title: 'An approachable start', detail: 'The first visit should feel clear, not exclusive.' },
+  { number: '02', title: 'Safety without theatre', detail: 'Straight answers, proper guidance and time to listen.' },
+  { number: '03', title: 'A women-first space', detail: 'A place where asking questions never feels out of place.' },
+  { number: '04', title: 'Confidence you earn', detail: 'The feeling that comes after giving something new a proper go.' },
+  { number: '05', title: 'Community without pressure', detail: 'Come alone or bring someone. Either way, you are part of the day.' },
+];
+
+function AboutPage() {
+  const root = useRef<HTMLDivElement>(null);
+  const [lightHeader, setLightHeader] = useState(false);
+
+  useEffect(() => {
+    document.title = 'About — Girls With Guns Australia';
+    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (description) description.content = 'Why Farrah created Girls With Guns Australia: a clearer, more approachable first step onto the shooting range for women.';
+  }, []);
+
+  const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    const hash = link?.getAttribute('href');
+    const destination = hash ? document.querySelector<HTMLElement>(hash) : null;
+    if (!hash || !destination) return;
+    event.preventDefault();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    gsap.to(window, { scrollTo: { y: destination, offsetY: 76, autoKill: true }, duration: reduced ? 0 : .72, ease: 'power2.inOut', overwrite: 'auto', onComplete: () => {
+      history.replaceState(null, '', hash);
+      destination.focus({ preventScroll: true });
+    } });
+  };
+
+  useLayoutEffect(() => {
+    if (!root.current) return;
+    const scope = root.current;
+    const themedSections = [
+      { selector: '[data-about-origin]', light: true },
+      { selector: '[data-about-principles]', light: false },
+      { selector: '[data-about-community]', light: true },
+      { selector: '[data-about-invitation]', light: false },
+    ];
+    const syncHeaderTheme = () => {
+      let light = false;
+      themedSections.forEach(({ selector, light: sectionLight }) => {
+        const section = scope.querySelector<HTMLElement>(selector);
+        if (section && section.getBoundingClientRect().top <= 77) light = sectionLight;
+      });
+      setLightHeader(light);
+    };
+    const headerTrigger = ScrollTrigger.create({ start: 0, end: 'max', onUpdate: syncHeaderTheme, onRefresh: syncHeaderTheme });
+    const headerFrame = window.requestAnimationFrame(syncHeaderTheme);
+    const mm = gsap.matchMedia();
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const heroItems = scope.querySelectorAll<HTMLElement>('[data-about-hero-reveal]');
+      const heroMedia = scope.querySelector<HTMLElement>('[data-about-hero-media]');
+      const heroTimeline = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      heroTimeline.fromTo(heroItems, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .48, stagger: .07 });
+      if (heroMedia) heroTimeline.fromTo(heroMedia, { opacity: 0, clipPath: 'inset(0 0 100% 0)' }, { opacity: 1, clipPath: 'inset(0 0 0% 0)', duration: .72, ease: 'power3.inOut' }, .08);
+
+      const sectionAnimations = Array.from(scope.querySelectorAll<HTMLElement>('[data-about-section]')).map((section) => {
+        const items = section.querySelectorAll<HTMLElement>('[data-about-reveal]');
+        if (!items.length) return null;
+        return gsap.fromTo(items, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .42, stagger: .06, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 84%', once: true } });
+      });
+
+      const refresh = () => ScrollTrigger.refresh();
+      document.fonts.ready.then(refresh);
+      window.addEventListener('load', refresh, { once: true });
+      return () => {
+        window.removeEventListener('load', refresh);
+        heroTimeline.kill();
+        sectionAnimations.forEach((animation) => animation?.kill());
+      };
+    }, scope);
+
+    mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
+      const heroImage = scope.querySelector<HTMLElement>('[data-about-hero-image]');
+      if (!heroImage) return;
+      const parallax = gsap.fromTo(heroImage, { yPercent: -3, scale: 1.045 }, { yPercent: 5, scale: 1.02, ease: 'none', scrollTrigger: { trigger: '[data-about-hero]', start: 'top top', end: 'bottom top', scrub: .7 } });
+      return () => parallax.kill();
+    }, scope);
+
+    return () => { window.cancelAnimationFrame(headerFrame); headerTrigger.kill(); mm.revert(); };
+  }, []);
+
+  return <div className="about-page app" ref={root} id="top" onClick={navigateSection}>
+    <a className="skip-link" href="#story">Skip to the story</a>
+    <Navigation light={lightHeader} currentPage="about" />
+    <main>
+      <section className="about-hero" data-about-hero aria-labelledby="about-heading">
+        <div className="about-hero__inner">
+          <div className="about-hero__copy">
+            <p className="eyebrow" data-about-hero-reveal><span />About / Girls With Guns Australia</p>
+            <h1 id="about-heading" data-about-hero-reveal>For the women<br />who wanted<br /><em>to try.</em></h1>
+            <p data-about-hero-reveal>Farrah built Girls With Guns Australia for women who were curious about shooting, but did not want to figure out the range alone.</p>
+            <a className="about-hero__jump" href="#story" data-about-hero-reveal>Why GWG exists <Arrow /></a>
+          </div>
+          <figure className="about-hero__media" data-about-hero-media>
+            <img data-about-hero-image src="/gwg-range-wide.webp" alt="Women taking part in a Girls With Guns range day" width="1600" height="1200" fetchPriority="high" />
+            <figcaption><span>Girls With Guns Australia</span><span>On the range / 01</span></figcaption>
+          </figure>
+          <p className="about-hero__aside" data-about-hero-reveal aria-hidden="true">A clearer first step<br />for women, with women.</p>
+        </div>
+      </section>
+
+      <section className="about-origin" id="story" data-about-origin data-about-section aria-labelledby="about-origin-heading" tabIndex={-1}>
+        <div className="about-origin__inner">
+          <header className="about-origin__header">
+            <p className="eyebrow eyebrow--dark" data-about-reveal><span />01 / Where it started</p>
+            <h2 id="about-origin-heading" data-about-reveal>It kept starting<br />with the same<br /><em>sentence.</em></h2>
+          </header>
+          <div className="about-origin__story">
+            <p className="about-origin__statement" data-about-reveal>I’d love to try.<br />I just don’t know<br />where to start.</p>
+            <div className="about-origin__body" data-about-reveal>
+              <p>Farrah kept meeting women who saw her shooting and were interested, but the environment could feel intimidating and the first step was not always obvious.</p>
+              <p>GWG grew from making that step more approachable: a day where the safety briefing is clear, questions are welcome and nobody is expected to arrive already knowing the ropes.</p>
+              <p>The point was never to make shooting look intimidating. It was to give women a proper chance to decide whether they enjoyed it.</p>
+            </div>
+          </div>
+          <figure className="about-origin__photo" data-about-reveal>
+            <img src="/gwg-participant-portrait.webp" alt="A Girls With Guns participant smiling at the range while holding a pink rifle" width="1200" height="1020" loading="lazy" />
+            <figcaption><span>A first step</span><span>Made together / 02</span></figcaption>
+          </figure>
+          <p className="about-origin__signoff" data-about-reveal>Come curious.<br /><em>Leave confident.</em></p>
+        </div>
+      </section>
+
+      <section className="about-principles" data-about-principles data-about-section aria-labelledby="about-principles-heading">
+        <div className="about-principles__inner">
+          <header>
+            <p className="eyebrow" data-about-reveal><span />02 / What matters</p>
+            <h2 id="about-principles-heading" data-about-reveal>Confidence comes<br />after the<br /><em>first step.</em></h2>
+            <p data-about-reveal>GWG does not ask you to feel fearless before you arrive. It gives you a clearer place to begin.</p>
+          </header>
+          <ol className="about-principles__list">
+            {aboutPrinciples.map(({ number, title, detail }) => <li key={number} data-about-reveal><span>{number}</span><h3>{title}</h3><p>{detail}</p></li>)}
+          </ol>
+        </div>
+      </section>
+
+      <section className="about-community" data-about-community data-about-section aria-labelledby="about-community-heading">
+        <div className="about-community__inner">
+          <header>
+            <p className="eyebrow eyebrow--dark" data-about-reveal><span />03 / The people</p>
+            <h2 id="about-community-heading" data-about-reveal>The range is only<br /><em>part of the story.</em></h2>
+            <p data-about-reveal>GWG is not about being the toughest person in the room. It is about the moment someone settles in, takes the shot and realises she can do more than she expected.</p>
+          </header>
+          <figure className="about-community__photo" data-about-reveal>
+            <img src="/gwg-beaconsfield-group.webp" alt="Girls With Guns participants together after a range day" width="1536" height="1152" loading="lazy" />
+            <figcaption><span>Beaconsfield</span><span>Together after the shoot / 03</span></figcaption>
+          </figure>
+          <ol className="about-community__steps" aria-label="The Girls With Guns experience">
+            <li data-about-reveal><span>01</span><strong>Show up curious.</strong></li>
+            <li data-about-reveal><span>02</span><strong>Learn at your pace.</strong></li>
+            <li data-about-reveal><span>03</span><strong>Leave with your target.</strong></li>
+          </ol>
+        </div>
+      </section>
+
+      <section className="about-invitation" data-about-invitation data-about-section aria-labelledby="about-invitation-heading">
+        <div className="about-invitation__inner">
+          <p className="eyebrow" data-about-reveal><span />04 / Come along</p>
+          <h2 id="about-invitation-heading" data-about-reveal>Meet GWG<br /><em>at the range.</em></h2>
+          <p data-about-reveal>See the next shoot, what happens on the day and what you need to bring.</p>
+          <div className="about-invitation__actions" data-about-reveal>
+            <a className="about-invitation__primary" href="/events#event"><span>Explore shoot days</span><Arrow /></a>
+            <a className="about-invitation__secondary" href="/events#waitlist">Join the location waitlist <Arrow /></a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter currentPage="about" />
+  </div>;
+}
+
 function App() {
   const root = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
@@ -746,7 +921,7 @@ function App() {
 
   return <div className="app" ref={root} id="top" onClick={navigatePreview}>
     <a className="skip-link" href="#story" onClick={goToStory}>Skip to our story</a>
-    <Navigation light={lightHeader} onStory={goToStory} />
+    <Navigation light={lightHeader} />
     <main>
       <div className="scroll-stage" ref={stage} data-scroll-stage><div className="scene" ref={scene}>
         <section className="hero" data-hero aria-label="Girls With Guns Australia introduction">
@@ -771,4 +946,5 @@ function App() {
 const rootContainer = document.getElementById('root') as HTMLDivElement & { reactRoot?: Root };
 rootContainer.reactRoot ??= createRoot(rootContainer);
 const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
-rootContainer.reactRoot.render(currentPath === '/events' ? <EventsPage /> : <App />);
+const currentPage = currentPath === '/events' ? <EventsPage /> : currentPath === '/about' ? <AboutPage /> : <App />;
+rootContainer.reactRoot.render(currentPage);
