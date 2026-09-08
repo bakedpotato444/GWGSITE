@@ -72,7 +72,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   color: var(--ink); background: #eae1d2f0; border-color: #42352826;
 }
 .brand { display: inline-flex; gap: 13px; align-items: center; width: fit-content; min-height: 44px; text-transform: uppercase; z-index: 3; }
-.brand__logo { display: block; width: 104px; height: 61px; padding: 3px 6px; object-fit: contain; background: #fff; box-shadow: inset 0 0 0 1px #2b222124, 0 5px 18px #0003; }
+.brand__logo { display: block; width: 110px; height: 61px; object-fit: contain; filter: drop-shadow(0 4px 12px #0007); }
 .brand__text { padding-left: 13px; border-left: 1px solid currentColor; font-size: .72rem; line-height: 1.25; letter-spacing: .075em; opacity: .9; }
 .nav { display: flex; gap: clamp(17px, 1.8vw, 30px); align-items: center; justify-content: center; }
 .nav a { position: relative; display: flex; align-items: center; min-height: 44px; padding: 12px 0; white-space: nowrap; font-size: .875rem; font-weight: 500; letter-spacing: .065em; text-transform: uppercase; transition: color 180ms; }
@@ -319,7 +319,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .site-footer { position: relative; z-index: 15; color: #d9cbca; background: linear-gradient(#0b090adf, #0b090adf), var(--grain), #0b090a; }
 .site-footer__inner { display: grid; grid-template-columns: 1fr 1.2fr .55fr; gap: 65px; max-width: 1660px; margin: auto; padding: 76px 6vw 28px; border-top: 1px solid #eadbdf24; }
 .footer-brand { display: flex; align-items: center; gap: 16px; align-self: start; }
-.footer-brand img { display: block; width: 108px; height: 72px; padding: 4px 7px; object-fit: contain; background: #fff; box-shadow: inset 0 0 0 1px #3025292e; }
+.footer-brand img { display: block; width: 118px; height: 72px; object-fit: contain; filter: drop-shadow(0 5px 16px #0008); }
 .footer-brand span { padding-left: 16px; border-left: 1px solid #dfcdd04a; font-size: .7rem; font-weight: 500; line-height: 1.35; letter-spacing: .08em; text-transform: uppercase; }
 .footer-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 28px; align-content: start; }
 .footer-nav a, .footer-social a { display: inline-flex; align-items: center; width: max-content; max-width: 100%; min-height: 44px; padding-block: 8px 5px; border-bottom: 1px solid transparent; color: #b6a9ab; font-size: .875rem; letter-spacing: .07em; text-transform: uppercase; transition: color 180ms, border-color 180ms; }
@@ -894,7 +894,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .site-header { gap: 22px; padding-inline: 2.5vw; }
   .brand__text { font-size: .69rem; }
   .brand { gap: 9px; }
-  .brand__logo { width: 88px; height: 57px; }
+  .brand__logo { width: 94px; height: 57px; }
   .nav { gap: 17px; }
   .nav a { font-size: .75rem; }
   .header-cta { padding-inline: 14px; gap: 17px; font-size: .76rem; }
@@ -946,7 +946,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 @media (max-width: 767px) {
   .site-header { height: 70px; grid-template-columns: 1fr auto; padding-inline: 20px; }
   .header-cta { display: none; }
-  .brand__logo { width: 78px; height: 52px; padding: 2px 4px; }
+  .brand__logo { width: 84px; height: 52px; }
   .brand__text { font-size: .65rem; }
   .brand { gap: 10px; }
   .menu-button { width: 44px; height: 44px; }
@@ -1055,7 +1055,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .waitlist-form button, .waitlist-form small { grid-column: 1; }
   .site-footer__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 47px 28px; padding: 58px 24px 25px; }
   .footer-brand { grid-column: 1 / -1; }
-  .footer-brand img { width: 94px; height: 64px; }
+  .footer-brand img { width: 104px; height: 64px; }
   .footer-nav { grid-template-columns: 1fr; gap: 12px; }
   .site-footer__signoff { grid-column: 1 / -1; margin-top: 36px; font-size: clamp(3.3rem, 14.5vw, 5rem); }
   .site-footer__bottom { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 13px 20px; margin-top: 24px; }

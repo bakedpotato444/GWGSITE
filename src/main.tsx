@@ -68,7 +68,7 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
   return (
     <header className={'site-header' + (light ? ' site-header--paper' : '') + (open ? ' site-header--open' : '')}>
       <a className="brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home" onClick={() => setOpen(false)}>
-        <img className="brand__logo" src="/gwg-logo-plain.jpg" alt="" width="1200" height="804" />
+        <img className="brand__logo" src="/gwg-logo-transparent.png" alt="" width="1563" height="1047" />
         <span className="brand__text">Girls With<br />Guns Australia</span>
       </a>
       <nav ref={menu} id="primary-navigation" className={open ? 'nav nav--open' : 'nav'} aria-label="Primary navigation">
@@ -360,7 +360,7 @@ function FinalCta() {
 function SiteFooter({ currentPage = 'home' }: { currentPage?: SitePage }) {
   return <footer className="site-footer">
     <div className="site-footer__inner">
-      <a className="footer-brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home"><img src="/gwg-logo-plain.jpg" alt="" width="1200" height="804" /><span>Girls With<br />Guns Australia</span></a>
+      <a className="footer-brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home"><img src="/gwg-logo-transparent.png" alt="" width="1563" height="1047" /><span>Girls With<br />Guns Australia</span></a>
       <nav className="footer-nav" aria-label="Footer navigation">
         <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'about' ? '#story' : '/about#story'} aria-current={currentPage === 'about' ? 'page' : undefined}>About</a><a href={currentPage === 'gallery' ? '#gallery' : '/gallery#gallery'} aria-current={currentPage === 'gallery' ? 'page' : undefined}>Gallery</a><a href={currentPage === 'coaching' ? '#coaching' : '/coaching#coaching'} aria-current={currentPage === 'coaching' ? 'page' : undefined}>Coaching</a><a href={currentPage === 'private' ? '#private-events' : '/private-events#private-events'} aria-current={currentPage === 'private' ? 'page' : undefined}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
       </nav>
