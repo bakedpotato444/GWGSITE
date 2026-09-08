@@ -15,7 +15,7 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <svg className={diagonal ? 'arrow arrow--diagonal' : 'arrow'} viewBox="0 0 28 20" fill="none" aria-hidden="true"><path d="M2 10h23M17 3l7 7-7 7" /></svg>;
 }
 
-type SitePage = 'home' | 'events' | 'about' | 'gallery';
+type SitePage = 'home' | 'events' | 'about' | 'gallery' | 'coaching' | 'private';
 
 function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPage?: SitePage }) {
   const [open, setOpen] = useState(false);
@@ -25,8 +25,16 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
     if (item === 'Events') return currentPage === 'events' ? '#event' : '/events#event';
     if (item === 'About') return currentPage === 'about' ? '#story' : '/about#story';
     if (item === 'Gallery') return currentPage === 'gallery' ? '#gallery' : '/gallery#gallery';
+    if (item === 'Coaching') return currentPage === 'coaching' ? '#coaching' : '/coaching#coaching';
+    if (item === 'Private Events') return currentPage === 'private' ? '#private-events' : '/private-events#private-events';
     return currentPage === 'home' ? '#explore' : '/#explore';
   };
+  const navIsCurrent = (item: string) =>
+    (currentPage === 'events' && item === 'Events') ||
+    (currentPage === 'about' && item === 'About') ||
+    (currentPage === 'gallery' && item === 'Gallery') ||
+    (currentPage === 'coaching' && item === 'Coaching') ||
+    (currentPage === 'private' && item === 'Private Events');
 
   useEffect(() => {
     if (!open) return;
@@ -35,7 +43,7 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
     const links = Array.from(menu.current?.querySelectorAll<HTMLAnchorElement>('a') ?? []);
     const main = document.querySelector('main');
     if (main) main.inert = true;
-    const focusFrame = window.requestAnimationFrame(() => links[0]?.focus({ preventScroll: true }));
+    links[0]?.focus({ preventScroll: true });
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') { setOpen(false); trigger.current?.focus(); }
       if (event.key !== 'Tab') return;
@@ -50,7 +58,6 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
     document.addEventListener('keydown', handleKey);
     desktop.addEventListener('change', closeOnDesktop);
     return () => {
-      window.cancelAnimationFrame(focusFrame);
       if (main) main.inert = false;
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKey);
@@ -61,11 +68,11 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
   return (
     <header className={'site-header' + (light ? ' site-header--paper' : '') + (open ? ' site-header--open' : '')}>
       <a className="brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home" onClick={() => setOpen(false)}>
-        <strong className="brand__monogram">GWG</strong><span className="brand__divider" aria-hidden="true" />
+        <img className="brand__logo" src="/gwg-logo-plain.jpg" alt="" width="1200" height="804" />
         <span className="brand__text">Girls With<br />Guns Australia</span>
       </a>
       <nav ref={menu} id="primary-navigation" className={open ? 'nav nav--open' : 'nav'} aria-label="Primary navigation">
-        {navItems.map((item, index) => <a key={item} href={navHref(item)} aria-current={(currentPage === 'events' && item === 'Events') || (currentPage === 'about' && item === 'About') || (currentPage === 'gallery' && item === 'Gallery') ? 'page' : undefined} onClick={() => setOpen(false)} style={{ '--item-index': index } as CSSProperties}><span className="nav__number" aria-hidden="true">0{index + 1}</span>{item}</a>)}
+        {navItems.map((item, index) => <a key={item} href={navHref(item)} aria-current={navIsCurrent(item) ? 'page' : undefined} onClick={() => setOpen(false)} style={{ '--item-index': index } as CSSProperties}><span className="nav__number" aria-hidden="true">0{index + 1}</span>{item}</a>)}
         <a className="nav__mobile-cta" href={currentPage === 'events' ? '#event-details' : '/events#event-details'} onClick={() => setOpen(false)}>Book next shoot <Arrow /></a>
         <p className="nav__signoff">Come curious. Leave confident.</p>
       </nav>
@@ -148,7 +155,7 @@ function DetailIcon({ clock = false }: { clock?: boolean }) {
 function EventCard() {
   return <div className="event-position" data-hero-overlay><article className="event-card">
     <span className="event-card__pin" aria-hidden="true" />
-    <div className="event-card__topline"><p className="eyebrow">Next shoot</p><span className="event-card__availability"><i />Limited spots</span></div>
+    <div className="event-card__topline"><p className="eyebrow">Next shoot</p><span className="event-card__availability"><i />Check Humanitix</span></div>
     <h2>Beaconsfield</h2>
     <div className="event-card__details"><p><DetailIcon />13 September</p><p><DetailIcon clock />10:30 AM</p></div>
     <a href="/events#event-details" className="paper-button"><span>Book your spot</span><Arrow /></a>
@@ -158,9 +165,9 @@ function EventCard() {
 
 function GalleryPreview() {
   const galleryImages = [
-    { layer: 'back', src: '/gwg-range-wide.webp', location: 'Bendigo', number: '01' },
-    { layer: 'mid', src: '/gwg-target-group.webp', location: 'Bendigo', number: '02' },
-    { layer: 'front', src: '/gwg-beaconsfield-group.webp', location: 'Beaconsfield', number: '03' },
+    { layer: 'back', src: '/photos/gwg-sale-range-overview.jpg', location: 'Sale', number: '01' },
+    { layer: 'mid', src: '/photos/gwg-sale-target-duo.jpg', location: 'Sale', number: '02' },
+    { layer: 'front', src: '/photos/gwg-sale-group.jpg', location: 'Sale', number: '03' },
   ];
   return <div className="gallery-position" data-hero-overlay><a className="gallery-preview" href="/gallery#gallery" aria-label="View the Girls With Guns gallery">
     <div className="gallery-stack" aria-hidden="true">{galleryImages.map(({ layer, src, location, number }) => <span className={'gallery-print gallery-print--' + layer} key={layer}><img src={src} alt="" width="1600" height="1200" loading="lazy" /><small>{location} <i>{number}</i></small></span>)}</div>
@@ -191,7 +198,7 @@ function StoryPanel() {
 const experienceFacts = [
   { label: 'Beginner friendly', detail: 'No prior experience' },
   { label: 'No licence required', detail: 'Come as you are' },
-  { label: 'Ages 12+', detail: 'A shared first experience' },
+  { label: 'Ages 12+', detail: 'Ages 12–17 with a guardian' },
   { label: 'Everything provided', detail: 'Equipment & safety gear' },
 ];
 
@@ -222,12 +229,12 @@ function ExperienceSection() {
 
         <div className="experience-media" data-experience-media>
           <figure className="experience-media__group">
-            <img src="/gwg-beaconsfield-wide.webp" alt="Girls With Guns participants at Beaconsfield holding their paper targets after a shoot" width="1536" height="1152" loading="lazy" />
-            <figcaption>Beaconsfield / After the shoot</figcaption>
+            <img src="/photos/gwg-sale-group.jpg" alt="Girls With Guns participants at Sale holding their paper targets after a shoot" width="1800" height="1350" loading="lazy" />
+            <figcaption>Sale / After the shoot</figcaption>
           </figure>
           <figure className="experience-media__detail">
-            <img src="/gwg-safety-gear.webp" alt="Pink hearing protection and safety glasses ready for Girls With Guns participants" width="1000" height="1333" loading="lazy" />
-            <figcaption>Safety gear / Provided</figcaption>
+            <img src="/photos/gwg-sale-rifle-detail.jpg" alt="Close-up of a pink patterned rifle used during a Girls With Guns range day" width="1800" height="1200" loading="lazy" />
+            <figcaption>On the line / Guided</figcaption>
           </figure>
           <p className="experience-media__note" aria-hidden="true">Everything’s ready.<br />So you can be too.</p>
         </div>
@@ -243,9 +250,9 @@ function ExperienceSection() {
 }
 
 const exploreItems = [
-  { title: 'Gallery', detail: 'Real shoot-day imagery.', image: '/gwg-target-group.webp', position: 'center 42%', href: '/gallery#gallery' },
-  { title: '1-on-1 Coaching', detail: 'Learn at your own pace.', image: '/gwg-participant-portrait.webp', position: '51% 25%', href: '#prototype-end' },
-  { title: 'Private Events', detail: 'Hens, birthdays, teams.', image: '/gwg-beaconsfield-group.webp', position: 'center 43%', href: '#prototype-end' },
+  { title: 'Gallery', detail: 'Real shoot-day imagery.', image: '/photos/gwg-sale-target-duo.jpg', position: 'center 44%', href: '/gallery#gallery' },
+  { title: '1-on-1 Coaching', detail: 'Learn at your own pace.', image: '/photos/gwg-sale-rifle-guidance.jpg', position: '57% 47%', href: '/coaching#coaching' },
+  { title: 'Private Events', detail: 'Hens, birthdays, teams.', image: '/photos/gwg-sale-group.jpg', position: 'center 48%', href: '/private-events#private-events' },
   { title: 'Shop GWG', detail: 'Merch.', image: null, position: 'center', href: '#prototype-end' },
 ];
 
@@ -299,6 +306,13 @@ function ExploreSection() {
 
 function FinalCta() {
   const [joined, setJoined] = useState(false);
+  const success = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!joined) return;
+    success.current?.focus({ preventScroll: true });
+  }, [joined]);
+
   const previewWaitlist = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setJoined(true);
@@ -314,21 +328,21 @@ function FinalCta() {
 
         <div className="final-cta__grid">
           <article className="final-event" data-final-card aria-labelledby="final-event-title">
-            <div className="final-event__topline"><span>Next shoot</span><span className="final-event__status"><i />Limited spots</span></div>
+            <div className="final-event__topline"><span>Next shoot</span><span className="final-event__status"><i />Check Humanitix</span></div>
             <h3 id="final-event-title">Beaconsfield</h3>
             <dl className="final-event__details">
               <div><dt>Date</dt><dd>13 September</dd></div>
               <div><dt>Start</dt><dd>10:30 AM</dd></div>
             </dl>
             <a className="final-event__button" href="/events#event-details"><span>Book your spot</span><Arrow /></a>
-            <p className="final-event__note">Preview event details — booking link to be connected.</p>
+            <p className="final-event__note">Live availability and bookings are confirmed through Humanitix.</p>
           </article>
 
           <div className="waitlist-panel" data-final-card>
             <p className="eyebrow">Not your area?</p>
             <h3>Tell us where<br />to go next.</h3>
             <p className="waitlist-panel__body">Add your suburb or postcode and how far you’re happy to travel. When a suitable shoot opens nearby, GWG can let you know.</p>
-            {joined ? <div className="waitlist-success" role="status" tabIndex={-1}>
+            {joined ? <div className="waitlist-success" ref={success} role="status" tabIndex={-1}>
               <span>Preview complete</span><strong>That’s the success state.</strong><p>No details were submitted or saved.</p>
               <button type="button" onClick={() => setJoined(false)}>Try the form again</button>
             </div> : <form className="waitlist-form" onSubmit={previewWaitlist}>
@@ -346,11 +360,11 @@ function FinalCta() {
 function SiteFooter({ currentPage = 'home' }: { currentPage?: SitePage }) {
   return <footer className="site-footer">
     <div className="site-footer__inner">
-      <a className="footer-brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home"><strong>GWG</strong><span>Girls With<br />Guns Australia</span></a>
+      <a className="footer-brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home"><img src="/gwg-logo-plain.jpg" alt="" width="1200" height="804" /><span>Girls With<br />Guns Australia</span></a>
       <nav className="footer-nav" aria-label="Footer navigation">
-        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'about' ? '#story' : '/about#story'} aria-current={currentPage === 'about' ? 'page' : undefined}>About</a><a href={currentPage === 'gallery' ? '#gallery' : '/gallery#gallery'} aria-current={currentPage === 'gallery' ? 'page' : undefined}>Gallery</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Coaching</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
+        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'about' ? '#story' : '/about#story'} aria-current={currentPage === 'about' ? 'page' : undefined}>About</a><a href={currentPage === 'gallery' ? '#gallery' : '/gallery#gallery'} aria-current={currentPage === 'gallery' ? 'page' : undefined}>Gallery</a><a href={currentPage === 'coaching' ? '#coaching' : '/coaching#coaching'} aria-current={currentPage === 'coaching' ? 'page' : undefined}>Coaching</a><a href={currentPage === 'private' ? '#private-events' : '/private-events#private-events'} aria-current={currentPage === 'private' ? 'page' : undefined}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
       </nav>
-      <div className="footer-social"><a href={currentPage === 'home' ? '#prototype-end' : '/#prototype-end'}>Instagram</a><a href={currentPage === 'home' ? '#prototype-end' : '/#prototype-end'}>Facebook</a></div>
+      <div className="footer-social"><a href="https://www.instagram.com/gwgaustralia/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/groups/1732825510500169/" target="_blank" rel="noreferrer">Facebook group</a><a href="mailto:girlswithgunsaustralia@gmail.com">Email GWG</a><a href="tel:+61408682632">0408 682 632</a></div>
       <p className="site-footer__signoff">Come curious.<br /><em>Leave confident.</em></p>
       <div className="site-footer__bottom"><span>© 2026 Girls With Guns Australia</span><span>Private website prototype</span><a href="#top">Back to top <Arrow /></a></div>
     </div>
@@ -365,9 +379,9 @@ const eventDaySteps = [
 ];
 
 const eventFaq = [
-  { question: 'Do I need a firearms licence?', answer: 'No. The current GWG event format is designed for complete beginners attending under range supervision. The live event listing will carry the final eligibility and range requirements.' },
+  { question: 'Do I need a firearms licence?', answer: 'No. GWG Come and Try Days are designed for complete beginners attending under range supervision.' },
   { question: 'What if I have never shot before?', answer: 'That is completely fine. You will begin with a safety briefing, then work through the session with guidance from the range team.' },
-  { question: 'How old do you need to be?', answer: 'The current preview event is listed as ages 12+. Check the live event listing before booking, as age and range requirements can vary.' },
+  { question: 'How old do you need to be?', answer: 'Participants must be at least 12. Anyone aged 12–17 must attend with a parent or legal guardian.' },
   { question: 'What should I bring?', answer: 'Bring photo ID, enclosed shoes and water. The event listing will confirm anything else required for that particular range.' },
   { question: 'Is the equipment provided?', answer: 'Yes. The current GWG format includes the firearms, ammunition and safety equipment used during the session.' },
   { question: 'Can I come on my own?', answer: 'Absolutely. Plenty of women come because they want to try it without needing to organise a whole group first.' },
@@ -375,8 +389,8 @@ const eventFaq = [
 
 function EventsPage() {
   const root = useRef<HTMLDivElement>(null);
+  const waitlistSuccess = useRef<HTMLDivElement>(null);
   const [lightHeader, setLightHeader] = useState(false);
-  const [bookingNote, setBookingNote] = useState(false);
   const [joined, setJoined] = useState(false);
   const [location, setLocation] = useState('');
   const [distance, setDistance] = useState('');
@@ -386,6 +400,11 @@ function EventsPage() {
     const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
     if (description) description.content = 'Explore upcoming Girls With Guns Australia shoot days and see what to expect on the range.';
   }, []);
+
+  useEffect(() => {
+    if (!joined) return;
+    waitlistSuccess.current?.focus({ preventScroll: true });
+  }, [joined]);
 
   const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -401,7 +420,6 @@ function EventsPage() {
     } });
   };
 
-  const previewBooking = () => setBookingNote(true);
   const previewWaitlist = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setJoined(true);
@@ -457,7 +475,7 @@ function EventsPage() {
     <Navigation light={lightHeader} currentPage="events" />
     <main>
       <section className="events-hero" id="event" aria-labelledby="events-heading" tabIndex={-1}>
-        <img className="events-hero__image" src="/gwg-range-wide.webp" alt="Women taking part in a Girls With Guns shoot day at the range" width="1600" height="1200" fetchPriority="high" />
+        <img className="events-hero__image" src="/photos/gwg-sale-range-wide.jpg" alt="Women taking part in a Girls With Guns shoot day at the Sale range" width="1800" height="1350" fetchPriority="high" />
         <div className="events-hero__shade" aria-hidden="true" />
         <div className="events-hero__inner">
           <div className="events-hero__copy">
@@ -468,18 +486,18 @@ function EventsPage() {
           </div>
 
           <article className="events-ticket" id="event-details" data-events-ticket aria-labelledby="events-ticket-title" tabIndex={-1}>
-            <div className="events-ticket__topline"><span>Preview event details</span><span className="events-ticket__status"><i />Limited spots</span></div>
+            <div className="events-ticket__topline"><span>Next event</span><span className="events-ticket__status"><i />Check availability</span></div>
             <p className="events-ticket__place">Next shoot / Victoria</p>
             <h2 id="events-ticket-title">Beaconsfield</h2>
             <dl className="events-ticket__details">
               <div><dt>Date</dt><dd><time>13 September</time></dd></div>
               <div><dt>Start</dt><dd><time>10:30 AM</time></dd></div>
               <div><dt>Location</dt><dd>Beaconsfield</dd></div>
-              <div><dt>Price</dt><dd>To be confirmed</dd></div>
+              <div><dt>Price</dt><dd>From $130</dd></div>
             </dl>
-            <ul className="events-ticket__tags" aria-label="Event highlights"><li>Beginner friendly</li><li>Ages 12+</li><li>Equipment provided</li></ul>
-            <button className="events-ticket__button" type="button" onClick={previewBooking}><span>Book your spot</span><Arrow /></button>
-            {bookingNote ? <p className="events-ticket__note" role="status">Booking is not live in this prototype. The final button will open the confirmed event listing.</p> : <p className="events-ticket__note">Event details and booking link still need final confirmation.</p>}
+            <ul className="events-ticket__tags" aria-label="Event highlights"><li>Beginner friendly</li><li>Ages 12+</li><li>Ages 12–17 with guardian</li><li>Equipment provided</li></ul>
+            <a className="events-ticket__button" href="https://events.humanitix.com/host/girls-with-guns-australia" target="_blank" rel="noreferrer"><span>View live tickets</span><Arrow /></a>
+            <p className="events-ticket__note">Humanitix is the source of truth for availability, session times and final booking details.</p>
           </article>
         </div>
       </section>
@@ -501,8 +519,8 @@ function EventsPage() {
             <p data-events-reveal>You will know what is happening before you step onto the range. The pace stays calm, the guidance stays close and there is room to ask questions.</p>
           </header>
           <figure className="events-day__photo" data-events-reveal>
-            <img src="/gwg-beaconsfield-wide.webp" alt="Girls With Guns participants together at Beaconsfield after a shoot" width="1536" height="1152" loading="lazy" />
-            <figcaption><span>Beaconsfield</span><span>After the shoot / 01</span></figcaption>
+            <img src="/photos/gwg-sale-group.jpg" alt="Girls With Guns participants together with their targets after a shoot" width="1800" height="1350" loading="lazy" />
+            <figcaption><span>Sale</span><span>After the shoot / 01</span></figcaption>
           </figure>
           <ol className="events-day__steps" aria-label="What happens at a Girls With Guns event">
             {eventDaySteps.map(({ number, title, detail }) => <li key={number} data-events-reveal><span>{number}</span><h3>{title}</h3><p>{detail}</p></li>)}
@@ -519,7 +537,7 @@ function EventsPage() {
             <dl className="events-ready__facts">
               <div data-events-reveal><dt>01</dt><dd><strong>No experience needed</strong><span>Complete beginners are welcome.</span></dd></div>
               <div data-events-reveal><dt>02</dt><dd><strong>No licence required</strong><span>For the current supervised event format.</span></dd></div>
-              <div data-events-reveal><dt>03</dt><dd><strong>Ages 12+</strong><span>Final requirements sit on the live listing.</span></dd></div>
+              <div data-events-reveal><dt>03</dt><dd><strong>Ages 12+</strong><span>Ages 12–17 attend with a parent or legal guardian.</span></dd></div>
               <div data-events-reveal><dt>04</dt><dd><strong>Everything provided</strong><span>Equipment and safety gear are ready.</span></dd></div>
             </dl>
           </div>
@@ -556,7 +574,7 @@ function EventsPage() {
           <div className="events-waitlist__form" data-events-reveal>
             <h3>Where should the next shoot be?</h3>
             <p>Add your suburb or postcode and how far you would travel. When a suitable date opens nearby, GWG can let you know.</p>
-            {joined ? <div className="waitlist-success" role="status">
+            {joined ? <div className="waitlist-success" ref={waitlistSuccess} role="status" tabIndex={-1}>
               <span>Preview complete</span><strong>That’s the success state.</strong><p>No details were submitted or saved.</p>
               <button type="button" onClick={() => setJoined(false)}>Try the form again</button>
             </div> : <form className="waitlist-form" onSubmit={previewWaitlist}>
@@ -580,6 +598,22 @@ const aboutPrinciples = [
   { number: '04', title: 'Confidence you earn', detail: 'The feeling that comes after giving something new a proper go.' },
   { number: '05', title: 'Community without pressure', detail: 'Come alone or bring someone. Either way, you are part of the day.' },
 ];
+
+const teamMembers = [
+  { name: 'Wayne', role: 'Chief Range Officer', detail: 'A firearms safety instructor, certified range officer, competitive shooter and military test engineer with more than 30 years of experience.' },
+  { name: 'Farrah', role: 'Founder', detail: 'A women’s empowerment leader with a background in coaching and helping women step outside their comfort zones.' },
+  { name: 'Allan', role: 'Shooting Coach', detail: 'An experienced coach who brings technical knowledge, patience and steady mentorship to every session.' },
+  { name: 'Joe', role: 'Range Officer & Instructor', detail: 'A skilled instructor known for a calm, encouraging approach to safety and marksmanship.' },
+  { name: 'Kelly', role: 'Community & Training Support', detail: 'Passionate about female empowerment and community, with practical support and positive energy on the day.' },
+  { name: 'Jennie', role: 'Range Officer & Instructor', detail: 'A warm, knowledgeable instructor focused on helping newcomers feel confident and capable.' },
+] as const;
+
+const sponsors = [
+  { name: 'Lorco Firearms', logo: '/sponsors/lorco.png', url: 'https://www.lorcofirearms.com.au/' },
+  { name: 'Beretta Australia', logo: '/sponsors/beretta.png', url: 'https://berettaaustralia.com.au/' },
+  { name: 'Winchester Australia', logo: '/sponsors/winchester.png', url: 'https://www.winchesteraustralia.com.au/' },
+  { name: 'Shield Sights', logo: '/sponsors/shield.png', url: 'https://www.shieldsights.com/' },
+] as const;
 
 function AboutPage() {
   const root = useRef<HTMLDivElement>(null);
@@ -610,8 +644,11 @@ function AboutPage() {
     const scope = root.current;
     const themedSections = [
       { selector: '[data-about-origin]', light: true },
+      { selector: '[data-about-founder]', light: false },
+      { selector: '[data-about-team]', light: true },
       { selector: '[data-about-principles]', light: false },
       { selector: '[data-about-community]', light: true },
+      { selector: '[data-about-sponsors]', light: true },
       { selector: '[data-about-invitation]', light: false },
     ];
     const syncHeaderTheme = () => {
@@ -672,8 +709,8 @@ function AboutPage() {
             <a className="about-hero__jump" href="#story" data-about-hero-reveal>Why GWG exists <Arrow /></a>
           </div>
           <figure className="about-hero__media" data-about-hero-media>
-            <img data-about-hero-image src="/gwg-range-wide.webp" alt="Women taking part in a Girls With Guns range day" width="1600" height="1200" fetchPriority="high" />
-            <figcaption><span>Girls With Guns Australia</span><span>On the range / 01</span></figcaption>
+            <img data-about-hero-image src="/photos/gwg-sale-range-overview.jpg" alt="A Girls With Guns range day underway at Sale" width="1800" height="1350" fetchPriority="high" />
+            <figcaption><span>Girls With Guns Australia</span><span>Sale / On the range</span></figcaption>
           </figure>
           <p className="about-hero__aside" data-about-hero-reveal aria-hidden="true">A clearer first step<br />for women, with women.</p>
         </div>
@@ -701,10 +738,46 @@ function AboutPage() {
         </div>
       </section>
 
+      <section className="about-founder" id="founder" data-about-founder data-about-section aria-labelledby="about-founder-heading" tabIndex={-1}>
+        <div className="about-founder__inner">
+          <figure className="about-founder__photo" data-about-reveal>
+            <img src="/photos/farrah-founder.jpg" alt="Farrah, founder of Girls With Guns Australia" width="1125" height="1500" loading="lazy" />
+            <figcaption><span>Farrah</span><span>Founder / GWG Australia</span></figcaption>
+          </figure>
+          <div className="about-founder__copy">
+            <p className="eyebrow" data-about-reveal><span />02 / Meet the founder</p>
+            <h2 id="about-founder-heading" data-about-reveal>Built from<br /><em>experience.</em></h2>
+            <p className="about-founder__lead" data-about-reveal>Farrah is the driving force behind Girls With Guns Australia.</p>
+            <div className="about-founder__body" data-about-reveal>
+              <p>Before GWG, she spent years running women’s empowerment workshops, confidence coaching and practical training. She saw what changes when women are given clear guidance, real support and room to try something outside their comfort zone.</p>
+              <p>GWG turns that same idea into a hands-on range experience: safe, welcoming and built to help women discover what they are capable of.</p>
+            </div>
+            <p className="about-founder__note" data-about-reveal>Strength can start with simply giving it a go.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="about-team" id="team" data-about-team data-about-section aria-labelledby="about-team-heading" tabIndex={-1}>
+        <div className="about-team__inner">
+          <header>
+            <p className="eyebrow eyebrow--dark" data-about-reveal><span />03 / Meet the team</p>
+            <h2 id="about-team-heading" data-about-reveal>Experienced.<br />Supportive.<br /><em>All in.</em></h2>
+            <p data-about-reveal>The people behind GWG bring range leadership, coaching and a genuine knack for helping first-timers settle in.</p>
+          </header>
+          <figure className="about-team__photo" data-about-reveal>
+            <img src="/photos/gwg-sale-team.jpg" alt="The Girls With Guns team together at Sale" width="1800" height="1521" loading="lazy" />
+            <figcaption><span>The GWG team</span><span>Sale / Victoria</span></figcaption>
+          </figure>
+          <ul className="about-team__list">
+            {teamMembers.map(({ name, role, detail }, index) => <li key={name} data-about-reveal><span>0{index + 1}</span><div><h3>{name}</h3><strong>{role}</strong><p>{detail}</p></div></li>)}
+          </ul>
+        </div>
+      </section>
+
       <section className="about-principles" data-about-principles data-about-section aria-labelledby="about-principles-heading">
         <div className="about-principles__inner">
           <header>
-            <p className="eyebrow" data-about-reveal><span />02 / What matters</p>
+            <p className="eyebrow" data-about-reveal><span />04 / What matters</p>
             <h2 id="about-principles-heading" data-about-reveal>Confidence comes<br />after the<br /><em>first step.</em></h2>
             <p data-about-reveal>GWG does not ask you to feel fearless before you arrive. It gives you a clearer place to begin.</p>
           </header>
@@ -717,13 +790,13 @@ function AboutPage() {
       <section className="about-community" data-about-community data-about-section aria-labelledby="about-community-heading">
         <div className="about-community__inner">
           <header>
-            <p className="eyebrow eyebrow--dark" data-about-reveal><span />03 / The people</p>
+            <p className="eyebrow eyebrow--dark" data-about-reveal><span />05 / The people</p>
             <h2 id="about-community-heading" data-about-reveal>The range is only<br /><em>part of the story.</em></h2>
             <p data-about-reveal>GWG is not about being the toughest person in the room. It is about the moment someone settles in, takes the shot and realises she can do more than she expected.</p>
           </header>
           <figure className="about-community__photo" data-about-reveal>
-            <img src="/gwg-beaconsfield-group.webp" alt="Girls With Guns participants together after a range day" width="1536" height="1152" loading="lazy" />
-            <figcaption><span>Beaconsfield</span><span>Together after the shoot / 03</span></figcaption>
+            <img src="/photos/gwg-sale-group.jpg" alt="Girls With Guns participants together with their targets after a Sale range day" width="1800" height="1350" loading="lazy" />
+            <figcaption><span>Sale</span><span>Together after the shoot</span></figcaption>
           </figure>
           <ol className="about-community__steps" aria-label="The Girls With Guns experience">
             <li data-about-reveal><span>01</span><strong>Show up curious.</strong></li>
@@ -733,9 +806,26 @@ function AboutPage() {
         </div>
       </section>
 
+      <section className="about-sponsors" id="sponsors" data-about-sponsors data-about-section aria-labelledby="about-sponsors-heading" tabIndex={-1}>
+        <div className="about-sponsors__inner">
+          <header>
+            <p className="eyebrow eyebrow--dark" data-about-reveal><span />06 / Proudly supported</p>
+            <h2 id="about-sponsors-heading" data-about-reveal>Backing more women<br /><em>at the range.</em></h2>
+            <p data-about-reveal>GWG is proud to be supported by businesses that help make these experiences possible.</p>
+          </header>
+          <div className="about-sponsors__grid">
+            {sponsors.map(({ name, logo, url }, index) => <a key={name} href={url} target="_blank" rel="noreferrer" data-about-reveal aria-label={`Visit ${name}`}>
+              <span className="about-sponsors__number">0{index + 1}</span>
+              <span className="about-sponsors__logo"><img src={logo} alt={`${name} logo`} loading="lazy" /></span>
+              <strong>{name}</strong><Arrow diagonal />
+            </a>)}
+          </div>
+        </div>
+      </section>
+
       <section className="about-invitation" data-about-invitation data-about-section aria-labelledby="about-invitation-heading">
         <div className="about-invitation__inner">
-          <p className="eyebrow" data-about-reveal><span />04 / Come along</p>
+          <p className="eyebrow" data-about-reveal><span />07 / Come along</p>
           <h2 id="about-invitation-heading" data-about-reveal>Meet GWG<br /><em>at the range.</em></h2>
           <p data-about-reveal>See the next shoot, what happens on the day and what you need to bring.</p>
           <div className="about-invitation__actions" data-about-reveal>
@@ -751,69 +841,84 @@ function AboutPage() {
 
 const galleryImages = [
   {
-    src: '/gwg-beaconsfield-wide.webp',
-    alt: 'Girls With Guns participants at Beaconsfield holding their paper targets after the shoot',
-    location: 'Beaconsfield', moment: 'After the shoot', number: '01', width: 1536, height: 1152, position: '50% 48%',
+    src: '/photos/gwg-sale-range-wide.jpg',
+    alt: 'A Girls With Guns range day underway across the Sale firing line',
+    location: 'Sale', moment: 'The range wakes up', number: '01', width: 1800, height: 1350, position: '50% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-pistol-line.jpg',
+    alt: 'A Girls With Guns participant aiming a pistol at the Sale range',
+    location: 'Sale', moment: 'Finding the sight line', number: '02', width: 1800, height: 1200, position: '48% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-target-duo.jpg',
+    alt: 'Two smiling Girls With Guns participants holding their paper targets',
+    location: 'Sale', moment: 'Targets worth keeping', number: '03', width: 1800, height: 1200, position: '50% 45%',
+  },
+  {
+    src: '/photos/gwg-sale-rifle-guidance.jpg',
+    alt: 'A Girls With Guns instructor guiding a participant with a scoped rifle',
+    location: 'Sale', moment: 'Guidance at the bench', number: '04', width: 1800, height: 1350, position: '56% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-rifle-detail.jpg',
+    alt: 'Close-up of a participant holding a pink patterned scoped rifle',
+    location: 'Sale', moment: 'Made to stand out', number: '05', width: 1800, height: 1200, position: '52% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-target-friends.jpg',
+    alt: 'Two Girls With Guns participants smiling and holding their shot targets',
+    location: 'Sale', moment: 'First shots, done', number: '06', width: 1800, height: 1350, position: '50% 46%',
+  },
+  {
+    src: '/photos/gwg-sale-pistol-close.jpg',
+    alt: 'A participant handling a pistol under close supervision at the range',
+    location: 'Sale', moment: 'Calm, close guidance', number: '07', width: 1800, height: 1200, position: '43% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-firing-line.jpg',
+    alt: 'Participants and instructors working together along the Sale firing line',
+    location: 'Sale', moment: 'Learning side by side', number: '08', width: 1800, height: 1200, position: '50% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-group.jpg',
+    alt: 'Girls With Guns participants together with their targets after the Sale range day',
+    location: 'Sale', moment: 'The full group', number: '09', width: 1800, height: 1350, position: '50% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-pistol-window.jpg',
+    alt: 'A Girls With Guns participant aiming a pistol from the covered range',
+    location: 'Sale', moment: 'Focused on the target', number: '10', width: 1800, height: 1200, position: '48% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-rifle-line.jpg',
+    alt: 'A Girls With Guns participant trying a scoped rifle with an instructor nearby',
+    location: 'Sale', moment: 'Trying the rifle line', number: '11', width: 1800, height: 1200, position: '54% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-instruction.jpg',
+    alt: 'An instructor standing beside a participant as she aims downrange',
+    location: 'Sale', moment: 'A steady first step', number: '12', width: 1800, height: 1200, position: '48% 50%',
+  },
+  {
+    src: '/photos/gwg-sale-team.jpg',
+    alt: 'The Girls With Guns team standing together at Sale',
+    location: 'Sale', moment: 'Meet the team', number: '13', width: 1800, height: 1521, position: '50% 42%',
+  },
+  {
+    src: '/photos/gwg-sale-team-backs.jpg',
+    alt: 'The Girls With Guns team showing their branded shirts at the range',
+    location: 'Sale', moment: 'GWG on tour', number: '14', width: 1800, height: 1447, position: '50% 50%',
   },
   {
     src: '/gwg-participant-portrait.webp',
     alt: 'A smiling Girls With Guns participant wearing pink hearing protection and holding a pink rifle',
-    location: 'Bendigo', moment: 'First-time confidence', number: '02', width: 1200, height: 1020, position: '50% 38%',
+    location: 'Bendigo', moment: 'First-time confidence', number: '15', width: 1200, height: 1020, position: '50% 38%',
   },
   {
-    src: '/gwg-sale-pistol.webp',
-    alt: 'A Girls With Guns participant firing a pistol under an instructor’s supervision at Sale Pistol Club',
-    location: 'Sale', moment: 'First shot at the line', number: '03', width: 2000, height: 1500, position: '43% 50%',
-  },
-  {
-    src: '/gwg-target-group.webp',
-    alt: 'Three Girls With Guns participants holding their paper targets together at Bendigo',
-    location: 'Bendigo', moment: 'Targets worth keeping', number: '04', width: 1400, height: 1189, position: '50% 42%',
-  },
-  {
-    src: '/gwg-sale-rifle.webp',
-    alt: 'A Girls With Guns participant trying a scoped rifle with an instructor at Sale Pistol Club',
-    location: 'Sale', moment: 'Trying the rifle line', number: '05', width: 2000, height: 1500, position: '72% 50%',
-  },
-  {
-    src: '/gwg-beaconsfield-group.webp',
-    alt: 'Five Girls With Guns participants holding targets and pink safety gear at Beaconsfield',
-    location: 'Beaconsfield', moment: 'The group shot', number: '06', width: 1600, height: 1200, position: '50% 44%',
-  },
-  {
-    src: '/gwg-sale-group.webp',
-    alt: 'A large group of Girls With Guns participants smiling with their targets after a Sale shoot day',
-    location: 'Sale', moment: 'Targets up', number: '07', width: 2000, height: 1500, position: '50% 50%',
-  },
-  {
-    src: '/gwg-range-wide.webp',
-    alt: 'Girls With Guns participants gathered inside the Bendigo range shelter between turns',
-    location: 'Bendigo', moment: 'Between turns', number: '08', width: 1400, height: 1190, position: '44% 50%',
-  },
-  {
-    src: '/gwg-sale-targets.webp',
-    alt: 'Four Girls With Guns participants holding their paper targets at Sale Pistol Club',
-    location: 'Sale', moment: 'The proof comes home', number: '09', width: 2000, height: 1500, position: '50% 50%',
-  },
-  {
-    src: '/gwg-safety-gear.webp',
-    alt: 'Rows of pink hearing protection and safety glasses laid out before an Echuca shoot',
-    location: 'Echuca', moment: 'Ready at the line', number: '10', width: 1000, height: 1333, position: '50% 50%',
-  },
-  {
-    src: '/gwg-sale-team-selfie.webp',
-    alt: 'Three smiling Girls With Guns team members together at Sale Pistol Club',
-    location: 'Sale', moment: 'Morning at the club', number: '11', width: 2000, height: 1500, position: '50% 50%',
-  },
-  {
-    src: '/gwg-sale-instructors.webp',
-    alt: 'The Girls With Guns instructor team standing together at Sale Pistol Club',
-    location: 'Sale', moment: 'The instructor team', number: '12', width: 2000, height: 1500, position: '50% 50%',
-  },
-  {
-    src: '/gwg-sale-team-backs.webp',
-    alt: 'The Girls With Guns team showing their branded shirts against the Sale range wall',
-    location: 'Sale', moment: 'GWG on tour', number: '13', width: 2000, height: 1500, position: '50% 50%',
+    src: '/gwg-beaconsfield-wide.webp',
+    alt: 'Girls With Guns participants at Beaconsfield holding their paper targets after the shoot',
+    location: 'Beaconsfield', moment: 'Another day, another group', number: '16', width: 1536, height: 1152, position: '50% 48%',
   },
 ] as const;
 
@@ -866,7 +971,10 @@ function GalleryPage() {
   useEffect(() => {
     if (!lightboxOpen) return;
     const previousOverflow = document.body.style.overflow;
+    const obscuredContent = Array.from(root.current?.querySelectorAll<HTMLElement>(':scope > header, :scope > main, :scope > footer') ?? [])
+      .map((element) => ({ element, wasInert: element.hasAttribute('inert') }));
     document.body.style.overflow = 'hidden';
+    obscuredContent.forEach(({ element }) => element.setAttribute('inert', ''));
     const focusFrame = window.requestAnimationFrame(() => closeButton.current?.focus({ preventScroll: true }));
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setLightboxIndex(null);
@@ -883,6 +991,7 @@ function GalleryPage() {
     return () => {
       window.cancelAnimationFrame(focusFrame);
       document.body.style.overflow = previousOverflow;
+      obscuredContent.forEach(({ element, wasInert }) => { if (!wasInert) element.removeAttribute('inert'); });
       document.removeEventListener('keydown', handleKey);
       window.requestAnimationFrame(() => lastFocused.current?.focus({ preventScroll: true }));
     };
@@ -1018,7 +1127,7 @@ function GalleryPage() {
 
           <div className="gallery-journal__grid">
             {journalImages.map((image, index) => [
-              <figure className={`gallery-journal__item gallery-journal__item--${galleryJournalLayouts[index]}`} data-gallery-reveal key={image.src}>
+              <figure className={`gallery-journal__item gallery-journal__item--${galleryJournalLayouts[index % galleryJournalLayouts.length]}`} data-gallery-reveal key={image.src}>
                 <button type="button" onClick={(event) => openLightbox(featuredImages.length + index, event)} aria-label={`Open ${image.location}, ${image.moment} photo`}>
                   <img src={image.src} alt={image.alt} width={image.width} height={image.height} loading="lazy" />
                   <span>View full frame <Arrow diagonal /></span>
@@ -1063,6 +1172,391 @@ function GalleryPage() {
         </div>
       </div>
     </div>}
+  </div>;
+}
+
+const coachingFits = [
+  { number: '01', title: 'Your first range visit', detail: 'You want a calmer introduction before stepping into a larger shoot day.' },
+  { number: '02', title: 'More room to settle in', detail: 'You would rather ask questions and find your feet without a group around you.' },
+  { number: '03', title: 'Closer guidance', detail: 'You want the session shaped around what feels clear, comfortable and useful to you.' },
+  { number: '04', title: 'A technique reset', detail: 'You have been before and want dedicated time to work on the fundamentals.' },
+];
+
+const coachingSteps = [
+  { number: '01', title: 'Tell GWG what you need', detail: 'Share your location, experience and what would make the session feel worthwhile.' },
+  { number: '02', title: 'Confirm the right range', detail: 'GWG checks suitable range availability, timing and the details of your session.' },
+  { number: '03', title: 'Meet at the range', detail: 'Arrive knowing the plan, with space to learn, ask questions and move at your pace.' },
+];
+
+function CoachingPage() {
+  const root = useRef<HTMLDivElement>(null);
+  const success = useRef<HTMLDivElement>(null);
+  const [lightHeader, setLightHeader] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    document.title = '1-on-1 Coaching — Girls With Guns Australia';
+    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (description) description.content = 'Enquire about a more personal introduction to the range with Girls With Guns Australia.';
+  }, []);
+
+  useEffect(() => {
+    if (submitted) window.requestAnimationFrame(() => success.current?.focus({ preventScroll: true }));
+  }, [submitted]);
+
+  const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    const hash = link?.getAttribute('href');
+    const destination = hash ? document.querySelector<HTMLElement>(hash) : null;
+    if (!hash || !destination) return;
+    event.preventDefault();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    gsap.to(window, { scrollTo: { y: destination, offsetY: 76, autoKill: true }, duration: reduced ? 0 : .72, ease: 'power2.inOut', overwrite: 'auto', onComplete: () => {
+      history.replaceState(null, '', hash);
+      destination.focus({ preventScroll: true });
+    } });
+  };
+
+  const previewEnquiry = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitted(true);
+  };
+
+  useLayoutEffect(() => {
+    if (!root.current) return;
+    const scope = root.current;
+    const themedSections = [
+      { selector: '[data-coaching-fit]', light: true },
+      { selector: '[data-coaching-process]', light: false },
+      { selector: '[data-coaching-enquiry]', light: true },
+    ];
+    const syncHeaderTheme = () => {
+      let light = false;
+      themedSections.forEach(({ selector, light: sectionLight }) => {
+        const section = scope.querySelector<HTMLElement>(selector);
+        if (section && section.getBoundingClientRect().top <= 77) light = sectionLight;
+      });
+      setLightHeader(light);
+    };
+    const headerTrigger = ScrollTrigger.create({ start: 0, end: 'max', onUpdate: syncHeaderTheme, onRefresh: syncHeaderTheme });
+    const headerFrame = window.requestAnimationFrame(syncHeaderTheme);
+    const mm = gsap.matchMedia();
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const heroItems = scope.querySelectorAll<HTMLElement>('[data-coaching-hero-reveal]');
+      const heroMedia = scope.querySelector<HTMLElement>('[data-coaching-hero-media]');
+      const heroTimeline = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      heroTimeline.fromTo(heroItems, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .48, stagger: .07 });
+      if (heroMedia) heroTimeline.fromTo(heroMedia, { opacity: 0, clipPath: 'inset(0 0 100% 0)' }, { opacity: 1, clipPath: 'inset(0 0 0% 0)', duration: .72, ease: 'power3.inOut' }, .08);
+
+      const sectionAnimations = Array.from(scope.querySelectorAll<HTMLElement>('[data-coaching-section]')).map((section) => {
+        const items = section.querySelectorAll<HTMLElement>('[data-coaching-reveal]');
+        if (!items.length) return null;
+        return gsap.fromTo(items, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .42, stagger: .065, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 84%', once: true } });
+      });
+
+      const refresh = () => ScrollTrigger.refresh();
+      document.fonts.ready.then(refresh);
+      window.addEventListener('load', refresh, { once: true });
+      return () => {
+        window.removeEventListener('load', refresh);
+        heroTimeline.kill();
+        sectionAnimations.forEach((animation) => animation?.kill());
+      };
+    }, scope);
+
+    mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
+      const heroImage = scope.querySelector<HTMLElement>('[data-coaching-hero-image]');
+      if (!heroImage) return;
+      const parallax = gsap.fromTo(heroImage, { yPercent: -.7, scale: 1.02 }, { yPercent: 1.2, scale: 1.01, ease: 'none', scrollTrigger: { trigger: '[data-coaching-hero]', start: 'top top', end: 'bottom top', scrub: .7 } });
+      return () => parallax.kill();
+    }, scope);
+
+    return () => { window.cancelAnimationFrame(headerFrame); headerTrigger.kill(); mm.revert(); };
+  }, []);
+
+  return <div className="coaching-page app" ref={root} id="top" onClick={navigateSection}>
+    <a className="skip-link" href="#enquire">Skip to the coaching enquiry</a>
+    <Navigation light={lightHeader} currentPage="coaching" />
+    <main>
+      <section className="coaching-hero" id="coaching" data-coaching-hero aria-labelledby="coaching-heading" tabIndex={-1}>
+        <div className="coaching-hero__inner">
+          <div className="coaching-hero__copy">
+            <p className="eyebrow" data-coaching-hero-reveal><span />1-on-1 coaching / GWG</p>
+            <h1 id="coaching-heading" data-coaching-hero-reveal>A quieter way<br />into the<br /><em>range.</em></h1>
+            <p data-coaching-hero-reveal>For women who want a more personal introduction, more room to ask questions or dedicated time to build confidence.</p>
+            <a className="coaching-hero__jump" href="#fit" data-coaching-hero-reveal>See if it feels right <Arrow /></a>
+          </div>
+          <figure className="coaching-hero__media" data-coaching-hero-media>
+            <img data-coaching-hero-image src="/photos/gwg-sale-rifle-guidance.jpg" alt="A Girls With Guns participant trying a scoped rifle with an instructor beside her" width="1800" height="1350" fetchPriority="high" />
+            <figcaption><span>Your pace / Your questions</span><span>One-to-one / 01</span></figcaption>
+            <div className="coaching-hero__mark" aria-hidden="true"><span>One range</span><strong>1:1</strong><span>One clear start</span></div>
+          </figure>
+        </div>
+      </section>
+
+      <section className="coaching-fit" id="fit" data-coaching-fit data-coaching-section aria-labelledby="coaching-fit-heading" tabIndex={-1}>
+        <div className="coaching-fit__inner">
+          <header className="coaching-fit__header">
+            <p className="eyebrow eyebrow--dark" data-coaching-reveal><span />01 / Is it for you?</p>
+            <h2 id="coaching-fit-heading" data-coaching-reveal>Your pace.<br />Your questions.<br /><em>Your start.</em></h2>
+            <p data-coaching-reveal>Coaching is the more personal path into GWG. It can suit a complete beginner, someone nervous about a group event or someone who wants closer guidance.</p>
+          </header>
+          <figure className="coaching-fit__photo" data-coaching-reveal>
+            <img src="/photos/gwg-sale-pistol-line.jpg" alt="A Girls With Guns participant building confidence on the pistol line" width="1800" height="1200" loading="lazy" />
+            <figcaption><span>Confidence, one step at a time</span><span>On the range / 02</span></figcaption>
+          </figure>
+          <ol className="coaching-fit__list">
+            {coachingFits.map(({ number, title, detail }) => <li key={number} data-coaching-reveal><span>{number}</span><h3>{title}</h3><p>{detail}</p></li>)}
+          </ol>
+          <p className="coaching-fit__note" data-coaching-reveal>Final coaching inclusions, pricing and availability will be confirmed with GWG before launch.</p>
+        </div>
+      </section>
+
+      <section className="coaching-process" data-coaching-process data-coaching-section aria-labelledby="coaching-process-heading">
+        <div className="coaching-process__inner">
+          <header>
+            <p className="eyebrow" data-coaching-reveal><span />02 / How it works</p>
+            <h2 id="coaching-process-heading" data-coaching-reveal>Personal does not<br />have to mean<br /><em>complicated.</em></h2>
+            <p data-coaching-reveal>Coaching is organised by enquiry and built around suitable range availability. Start with what you need; GWG can work out the right next step from there.</p>
+          </header>
+          <ol className="coaching-process__steps">
+            {coachingSteps.map(({ number, title, detail }) => <li key={number} data-coaching-reveal><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></li>)}
+          </ol>
+          <figure className="coaching-process__photo" data-coaching-reveal>
+            <img src="/photos/gwg-sale-pistol-close.jpg" alt="A Girls With Guns participant receiving close guidance while shooting at the range" width="1800" height="1200" loading="lazy" />
+            <figcaption><span>Close guidance</span><span>Clear next steps / 03</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section className="coaching-enquiry" id="enquire" data-coaching-enquiry data-coaching-section aria-labelledby="coaching-enquiry-heading" tabIndex={-1}>
+        <div className="coaching-enquiry__inner">
+          <header>
+            <p className="eyebrow eyebrow--dark" data-coaching-reveal><span />03 / Start the conversation</p>
+            <h2 id="coaching-enquiry-heading" data-coaching-reveal>Tell GWG what<br />would help<br /><em>you begin.</em></h2>
+            <p data-coaching-reveal>No need to know exactly what to book. Share where you are starting from and what you would like help with.</p>
+            <a href="/events#event" data-coaching-reveal>Prefer a group shoot day? <Arrow /></a>
+          </header>
+          <div className="coaching-enquiry__panel" data-coaching-reveal>
+            {submitted ? <div className="coaching-enquiry__success" ref={success} role="status" tabIndex={-1}>
+              <span>Preview complete</span><h3>That’s the enquiry success state.</h3><p>No details were submitted or saved.</p>
+              <button type="button" onClick={() => setSubmitted(false)}>Try the form again</button>
+            </div> : <form className="coaching-form" onSubmit={previewEnquiry}>
+              <div className="coaching-form__grid">
+                <label><span>Name</span><input name="name" type="text" autoComplete="name" required /></label>
+                <label><span>Email</span><input name="email" type="email" autoComplete="email" required /></label>
+                <label><span>Mobile</span><input name="mobile" type="tel" autoComplete="tel" required /></label>
+                <label><span>Suburb or area</span><input name="location" type="text" autoComplete="address-level2" required /></label>
+                <label className="coaching-form__wide"><span>Experience level</span><select name="experience" defaultValue="" required><option value="" disabled>Select one</option><option value="first-time">First time at a range</option><option value="some-experience">I have tried it before</option><option value="returning">I shoot occasionally</option></select></label>
+                <label className="coaching-form__wide"><span>What would you like help with?</span><textarea name="message" rows={5} required /></label>
+              </div>
+              <button className="coaching-form__submit" type="submit"><span>Send coaching enquiry</span><Arrow /></button>
+              <small>Prototype only — this enquiry is not submitted yet.</small>
+            </form>}
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter currentPage="coaching" />
+  </div>;
+}
+
+const privateEventTypes = [
+  { number: '01', title: 'Hens & celebrations', detail: 'A memorable group plan for the occasion, built around a suitable range and date.' },
+  { number: '02', title: 'Birthdays', detail: 'Try something different together and leave with a target worth taking home.' },
+  { number: '03', title: 'Workplace & teams', detail: 'A group experience away from the usual lunch, drinks or conference room.' },
+  { number: '04', title: 'Your own private group', detail: 'Bring your people and let GWG help shape a range day around the group.' },
+];
+
+const privateEventSteps = [
+  { number: '01', title: 'Tell GWG about the group', detail: 'Share the occasion, rough group size, preferred area and the timeframe you have in mind.' },
+  { number: '02', title: 'Check ranges and dates', detail: 'GWG looks at suitable range availability and what can work for your group.' },
+  { number: '03', title: 'Confirm the plan and price', detail: 'You receive the proposed details, inclusions and pricing before committing.' },
+  { number: '04', title: 'Lock in the day', detail: 'Once the details suit everyone, GWG confirms the event plan with you.' },
+];
+
+function PrivateEventsPage() {
+  const root = useRef<HTMLDivElement>(null);
+  const success = useRef<HTMLDivElement>(null);
+  const [lightHeader, setLightHeader] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    document.title = 'Private Events — Girls With Guns Australia';
+    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (description) description.content = 'Enquire about a private Girls With Guns Australia range day for your group.';
+  }, []);
+
+  useEffect(() => {
+    if (submitted) window.requestAnimationFrame(() => success.current?.focus({ preventScroll: true }));
+  }, [submitted]);
+
+  const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    const hash = link?.getAttribute('href');
+    const destination = hash ? document.querySelector<HTMLElement>(hash) : null;
+    if (!hash || !destination) return;
+    event.preventDefault();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    gsap.to(window, { scrollTo: { y: destination, offsetY: 76, autoKill: true }, duration: reduced ? 0 : .72, ease: 'power2.inOut', overwrite: 'auto', onComplete: () => {
+      history.replaceState(null, '', hash);
+      destination.focus({ preventScroll: true });
+    } });
+  };
+
+  const previewEnquiry = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitted(true);
+  };
+
+  useLayoutEffect(() => {
+    if (!root.current) return;
+    const scope = root.current;
+    const themedSections = [
+      { selector: '[data-private-plan]', light: true },
+      { selector: '[data-private-process]', light: false },
+      { selector: '[data-private-enquiry]', light: true },
+    ];
+    const syncHeaderTheme = () => {
+      let letLight = false;
+      themedSections.forEach(({ selector, light }) => {
+        const section = scope.querySelector<HTMLElement>(selector);
+        if (section && section.getBoundingClientRect().top <= 77) letLight = light;
+      });
+      setLightHeader(letLight);
+    };
+    const headerTrigger = ScrollTrigger.create({ start: 0, end: 'max', onUpdate: syncHeaderTheme, onRefresh: syncHeaderTheme });
+    const headerFrame = window.requestAnimationFrame(syncHeaderTheme);
+    const mm = gsap.matchMedia();
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const heroTimeline = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      heroTimeline
+        .fromTo(scope.querySelectorAll<HTMLElement>('[data-private-hero-reveal]'), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .48, stagger: .07 })
+        .fromTo(scope.querySelector<HTMLElement>('[data-private-hero-media]'), { opacity: 0, clipPath: 'inset(0 0 100% 0)' }, { opacity: 1, clipPath: 'inset(0 0 0% 0)', duration: .74, ease: 'power3.inOut' }, .08);
+
+      const sectionAnimations = Array.from(scope.querySelectorAll<HTMLElement>('[data-private-section]')).map((section) => {
+        const items = section.querySelectorAll<HTMLElement>('[data-private-reveal]');
+        if (!items.length) return null;
+        return gsap.fromTo(items, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: .43, stagger: .065, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 83%', once: true } });
+      });
+
+      const refresh = () => ScrollTrigger.refresh();
+      document.fonts.ready.then(refresh);
+      window.addEventListener('load', refresh, { once: true });
+      return () => {
+        window.removeEventListener('load', refresh);
+        heroTimeline.kill();
+        sectionAnimations.forEach((animation) => animation?.kill());
+      };
+    }, scope);
+
+    mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
+      const collage = scope.querySelector<HTMLElement>('[data-private-hero-media]');
+      if (!collage) return;
+      const parallax = gsap.fromTo(collage, { yPercent: -1.1 }, { yPercent: 1.5, ease: 'none', scrollTrigger: { trigger: '.private-hero', start: 'top top', end: 'bottom top', scrub: .65 } });
+      return () => parallax.kill();
+    }, scope);
+
+    return () => { window.cancelAnimationFrame(headerFrame); headerTrigger.kill(); mm.revert(); };
+  }, []);
+
+  return <div className="private-page app" ref={root} id="top" onClick={navigateSection}>
+    <a className="skip-link" href="#private-enquire">Skip to the private event enquiry</a>
+    <Navigation light={lightHeader} currentPage="private" />
+    <main>
+      <section className="private-hero" id="private-events" aria-labelledby="private-heading" tabIndex={-1}>
+        <div className="private-hero__inner">
+          <div className="private-hero__copy">
+            <p className="eyebrow" data-private-hero-reveal><span />Private events / GWG</p>
+            <h1 id="private-heading" data-private-hero-reveal>Bring your people.<br /><em>Make it a range day.</em></h1>
+            <p data-private-hero-reveal>Hens, birthdays, workplace teams or simply your own group trying something different together.</p>
+            <a className="private-hero__jump" href="#private-plan" data-private-hero-reveal>Plan your private event <Arrow /></a>
+          </div>
+          <div className="private-hero__collage" data-private-hero-media>
+            <figure className="private-hero__photo private-hero__photo--group">
+              <img src="/photos/gwg-sale-target-friends.jpg" alt="Girls With Guns participants holding their targets together after a range day" width="1800" height="1350" fetchPriority="high" />
+              <figcaption><span>Your people</span><span>Your range day / 01</span></figcaption>
+            </figure>
+            <figure className="private-hero__photo private-hero__photo--selfie">
+              <img src="/photos/gwg-sale-team-backs.jpg" alt="The Girls With Guns team together in branded shirts at the range" width="1800" height="1447" fetchPriority="high" />
+              <figcaption><span>Together / 02</span></figcaption>
+            </figure>
+            <aside className="private-hero__availability" aria-label="Private event availability">
+              <span>Private event</span><strong>BY<br />ENQUIRY</strong><p>Subject to suitable range availability</p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section className="private-plan" id="private-plan" data-private-plan data-private-section aria-labelledby="private-plan-heading" tabIndex={-1}>
+        <div className="private-plan__inner">
+          <header>
+            <p className="eyebrow eyebrow--dark" data-private-reveal><span />01 / Your kind of group day</p>
+            <h2 id="private-plan-heading" data-private-reveal>Not your usual<br /><em>group plan.</em></h2>
+            <p data-private-reveal>The occasion can change. The starting point is the same: tell GWG who is coming and what you have in mind, then the right range day can be worked out from there.</p>
+          </header>
+          <figure className="private-plan__photo" data-private-reveal>
+            <img src="/photos/gwg-sale-group.jpg" alt="A large Girls With Guns group smiling together with their targets after a range day" width="1800" height="1350" loading="lazy" />
+            <figcaption><span>Bring the group</span><span>Leave with the story / 03</span></figcaption>
+          </figure>
+          <ol className="private-plan__types">
+            {privateEventTypes.map(({ number, title, detail }) => <li key={number} data-private-reveal><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></li>)}
+          </ol>
+          <p className="private-plan__note" data-private-reveal>Private events are organised by enquiry and are subject to suitable range availability.</p>
+        </div>
+      </section>
+
+      <section className="private-process" data-private-process data-private-section aria-labelledby="private-process-heading">
+        <div className="private-process__inner">
+          <header>
+            <p className="eyebrow" data-private-reveal><span />02 / How it comes together</p>
+            <h2 id="private-process-heading" data-private-reveal>One enquiry.<br />A day built<br /><em>around the group.</em></h2>
+            <p data-private-reveal>Ranges, dates and formats vary, so GWG confirms the practical details before anything is locked in.</p>
+          </header>
+          <ol className="private-process__steps">
+            {privateEventSteps.map(({ number, title, detail }) => <li key={number} data-private-reveal><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></li>)}
+          </ol>
+          <aside className="private-process__notice" data-private-reveal>
+            <span>Worth knowing</span><strong>A little lead time goes a long way.</strong><p>GWG needs time to coordinate a suitable range, date and event format. The more flexible your group can be, the easier it is to find the right fit.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section className="private-enquiry" id="private-enquire" data-private-enquiry data-private-section aria-labelledby="private-enquiry-heading" tabIndex={-1}>
+        <div className="private-enquiry__inner">
+          <header>
+            <p className="eyebrow eyebrow--dark" data-private-reveal><span />03 / Start planning</p>
+            <h2 id="private-enquiry-heading" data-private-reveal>Tell us about<br /><em>your group.</em></h2>
+            <p data-private-reveal>You do not need every detail sorted. A rough group size, area and timeframe is enough to start the conversation.</p>
+            <a href="/events#event" data-private-reveal>Looking for a public shoot day? <Arrow /></a>
+          </header>
+          <div className="private-enquiry__panel" data-private-reveal>
+            {submitted ? <div className="private-enquiry__success" ref={success} role="status" tabIndex={-1}>
+              <span>Preview complete</span><h3>That’s the private-event success state.</h3><p>No details were submitted or saved.</p>
+              <button type="button" onClick={() => setSubmitted(false)}>Try the form again</button>
+            </div> : <form className="private-form" onSubmit={previewEnquiry}>
+              <div className="private-form__grid">
+                <label><span>Name</span><input name="name" type="text" autoComplete="name" required /></label>
+                <label><span>Email</span><input name="email" type="email" autoComplete="email" required /></label>
+                <label><span>Mobile</span><input name="mobile" type="tel" autoComplete="tel" required /></label>
+                <label><span>Approx. group size</span><input name="groupSize" type="number" min="1" inputMode="numeric" required /></label>
+                <label><span>Preferred area</span><input name="area" type="text" autoComplete="address-level2" required /></label>
+                <label><span>Preferred date or timeframe</span><input name="timeframe" type="text" required /></label>
+                <label className="private-form__wide"><span>Event type</span><select name="eventType" defaultValue="" required><option value="" disabled>Select one</option><option value="hens">Hens or celebration</option><option value="birthday">Birthday</option><option value="workplace">Workplace or team event</option><option value="private-group">Private group</option></select></label>
+                <label className="private-form__wide"><span>Anything else GWG should know?</span><textarea name="notes" rows={5} required /></label>
+              </div>
+              <button className="private-form__submit" type="submit"><span>Send private event enquiry</span><Arrow /></button>
+              <small>Prototype only — this enquiry is not submitted yet.</small>
+            </form>}
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter currentPage="private" />
   </div>;
 }
 
@@ -1264,5 +1758,5 @@ function App() {
 const rootContainer = document.getElementById('root') as HTMLDivElement & { reactRoot?: Root };
 rootContainer.reactRoot ??= createRoot(rootContainer);
 const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
-const currentPage = currentPath === '/events' ? <EventsPage /> : currentPath === '/about' ? <AboutPage /> : currentPath === '/gallery' ? <GalleryPage /> : <App />;
+const currentPage = currentPath === '/events' ? <EventsPage /> : currentPath === '/about' ? <AboutPage /> : currentPath === '/gallery' ? <GalleryPage /> : currentPath === '/coaching' ? <CoachingPage /> : currentPath === '/private-events' ? <PrivateEventsPage /> : <App />;
 rootContainer.reactRoot.render(currentPage);
