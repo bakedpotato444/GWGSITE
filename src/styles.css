@@ -906,7 +906,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .nav {
     position: fixed; z-index: 2; inset: -5px 0 auto; display: flex; align-items: stretch; flex-direction: column; justify-content: flex-start;
     height: 100svh; padding: 125px max(8vw, 28px) 35px; gap: 0; overflow-y: auto;
-    background: linear-gradient(#151015b8, #151015b8), var(--grain), #151015; color: var(--white);
+    background: #120e11; color: var(--white); box-shadow: inset 4px 0 0 #d989a633;
     visibility: hidden; transform: translateX(103%); transition: transform 500ms var(--ease), visibility 0s linear 500ms;
   }
   .nav--open { visibility: visible; transform: none; transition: transform 500ms var(--ease), visibility 0s; }
@@ -916,7 +916,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .nav__number { display: inline-block; color: #c07893; font: 500 .75rem/1 var(--body); letter-spacing: .1em; }
   .nav .nav__mobile-cta { display: flex; justify-content: space-between; max-width: 320px; min-height: 50px; margin-top: 22px; padding-top: 16px; border-top: 1px solid #fff3; color: var(--pink-bright); font: 500 1rem/1.2 var(--body); text-transform: uppercase; letter-spacing: .07em; }
   .nav__signoff { display: block; color: #b99faa; margin: auto 0 0; padding-top: 25px; font: italic 500 1.35rem/1.2 var(--serif); }
-  .site-header--open { color: var(--white); background: #151015; }
+  .site-header--open { color: var(--white); background: #120e11; }
   .site-header--open .brand__monogram { color: var(--pink-bright); }
   .site-header--open .menu-button { border-color: #fff3; }
   .site-header--open .header-cta { visibility: hidden; }
