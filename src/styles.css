@@ -308,9 +308,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .waitlist-form input::placeholder { color: #86787c; }
 .waitlist-form select { padding-inline: 8px; cursor: pointer; }
 .waitlist-form input:focus, .waitlist-form select:focus { border-bottom-color: var(--pink-bright); box-shadow: 0 2px 0 var(--pink-bright); }
+.waitlist-form__wide { grid-column: 1 / -1; }
 .waitlist-form button { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 58px; padding: 0 18px; border: 0; color: #251319; background: var(--grain), var(--pink); font-size: .875rem; font-weight: 600; letter-spacing: .085em; text-transform: uppercase; }
 .waitlist-form button .arrow { width: 25px; }
+.waitlist-form button:disabled, .coaching-form__submit:disabled, .private-form__submit:disabled { cursor: wait; opacity: .62; }
 .waitlist-form small { grid-column: 1 / -1; color: #887b7e; font-size: .75rem; line-height: 1.4; }
+.form-error { margin: 13px 0 0; color: #8d264a; font-size: .82rem; line-height: 1.5; }
+.form-error a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.waitlist-form .form-error { grid-column: 1 / -1; margin: 0; color: #f0a9c2; }
 .waitlist-success { min-height: 206px; padding: 27px; border: 1px solid #ead9de3d; background: #21191d99; }
 .waitlist-success > span { color: var(--pink-bright); font-size: .65rem; font-weight: 600; letter-spacing: .11em; text-transform: uppercase; }
 .waitlist-success > strong { display: block; margin-top: 11px; font: 500 2rem/1 var(--serif); }
@@ -1052,7 +1057,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .waitlist-panel { max-width: none; }
   .waitlist-panel h3 { font-size: clamp(3.1rem, 13.5vw, 4.5rem); }
   .waitlist-form { grid-template-columns: 1fr; }
-  .waitlist-form button, .waitlist-form small { grid-column: 1; }
+  .waitlist-form__wide, .waitlist-form button, .waitlist-form small, .waitlist-form .form-error { grid-column: 1; }
   .site-footer__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 47px 28px; padding: 58px 24px 25px; }
   .footer-brand { grid-column: 1 / -1; }
   .footer-brand img { width: 104px; height: 64px; }

@@ -16,6 +16,32 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
 }
 
 type SitePage = 'home' | 'events' | 'about' | 'gallery' | 'coaching' | 'private';
+type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
+
+const formEndpoints = {
+  waitlist: 'https://formspree.io/f/xdeopnep',
+  coaching: 'https://formspree.io/f/myeybgea',
+  privateEvents: 'https://formspree.io/f/mppzoadw',
+} as const;
+
+async function submitForm(event: FormEvent<HTMLFormElement>, endpoint: string, setStatus: (status: FormStatus) => void) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  setStatus('submitting');
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) throw new Error('Form submission failed');
+    form.reset();
+    setStatus('success');
+  } catch {
+    setStatus('error');
+  }
+}
 
 function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPage?: SitePage }) {
   const [open, setOpen] = useState(false);
@@ -305,18 +331,15 @@ function ExploreSection() {
 }
 
 function FinalCta() {
-  const [joined, setJoined] = useState(false);
+  const [status, setStatus] = useState<FormStatus>('idle');
   const success = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!joined) return;
+    if (status !== 'success') return;
     success.current?.focus({ preventScroll: true });
-  }, [joined]);
+  }, [status]);
 
-  const previewWaitlist = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setJoined(true);
-  };
+  const sendWaitlist = (event: FormEvent<HTMLFormElement>) => submitForm(event, formEndpoints.waitlist, setStatus);
 
   return <section className="final-cta" id="prototype-end" data-final aria-labelledby="final-cta-heading" tabIndex={-1}>
       <div className="final-cta__inner">
@@ -342,14 +365,18 @@ function FinalCta() {
             <p className="eyebrow">Not your area?</p>
             <h3>Tell us where<br />to go next.</h3>
             <p className="waitlist-panel__body">Add your suburb or postcode and how far you’re happy to travel. When a suitable shoot opens nearby, GWG can let you know.</p>
-            {joined ? <div className="waitlist-success" ref={success} role="status" tabIndex={-1}>
-              <span>Preview complete</span><strong>That’s the success state.</strong><p>No details were submitted or saved.</p>
-              <button type="button" onClick={() => setJoined(false)}>Try the form again</button>
-            </div> : <form className="waitlist-form" onSubmit={previewWaitlist}>
+            {status === 'success' ? <div className="waitlist-success" ref={success} role="status" tabIndex={-1}>
+              <span>You’re on the list</span><strong>We’ve got your location.</strong><p>GWG will be in touch when a suitable shoot is confirmed nearby.</p>
+              <button type="button" onClick={() => setStatus('idle')}>Add another location</button>
+            </div> : <form className="waitlist-form" action={formEndpoints.waitlist} method="POST" onSubmit={sendWaitlist}>
+              <input type="hidden" name="_subject" value="New GWG event waitlist request" />
+              <input type="hidden" name="source_page" value="Homepage" />
               <label><span>Suburb or postcode</span><input name="location" type="text" autoComplete="postal-code" placeholder="e.g. Pakenham 3810" required /></label>
               <label><span>Travel distance</span><select name="distance" defaultValue="" required><option value="" disabled>Select distance</option><option value="30">Up to 30 km</option><option value="60">Up to 60 km</option><option value="100">Up to 100 km</option><option value="anywhere">Happy to travel</option></select></label>
-              <button type="submit"><span>Join the waitlist</span><Arrow /></button>
-              <small>Prototype only — these details aren’t submitted yet.</small>
+              <label className="waitlist-form__wide"><span>Email</span><input name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
+              <button type="submit" disabled={status === 'submitting'}><span>{status === 'submitting' ? 'Joining…' : 'Join the waitlist'}</span><Arrow /></button>
+              {status === 'error' && <p className="form-error" role="alert">That didn’t send. Please try again or <a href="mailto:girlswithgunsaustralia@gmail.com">email GWG directly</a>.</p>}
+              <small>Your details go directly to Girls With Guns Australia.</small>
             </form>}
           </div>
         </div>
@@ -391,9 +418,7 @@ function EventsPage() {
   const root = useRef<HTMLDivElement>(null);
   const waitlistSuccess = useRef<HTMLDivElement>(null);
   const [lightHeader, setLightHeader] = useState(false);
-  const [joined, setJoined] = useState(false);
-  const [location, setLocation] = useState('');
-  const [distance, setDistance] = useState('');
+  const [waitlistStatus, setWaitlistStatus] = useState<FormStatus>('idle');
 
   useEffect(() => {
     document.title = 'Events — Girls With Guns Australia';
@@ -402,9 +427,9 @@ function EventsPage() {
   }, []);
 
   useEffect(() => {
-    if (!joined) return;
+    if (waitlistStatus !== 'success') return;
     waitlistSuccess.current?.focus({ preventScroll: true });
-  }, [joined]);
+  }, [waitlistStatus]);
 
   const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -420,10 +445,7 @@ function EventsPage() {
     } });
   };
 
-  const previewWaitlist = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setJoined(true);
-  };
+  const sendWaitlist = (event: FormEvent<HTMLFormElement>) => submitForm(event, formEndpoints.waitlist, setWaitlistStatus);
 
   useLayoutEffect(() => {
     if (!root.current) return;
@@ -574,14 +596,18 @@ function EventsPage() {
           <div className="events-waitlist__form" data-events-reveal>
             <h3>Where should the next shoot be?</h3>
             <p>Add your suburb or postcode and how far you would travel. When a suitable date opens nearby, GWG can let you know.</p>
-            {joined ? <div className="waitlist-success" ref={waitlistSuccess} role="status" tabIndex={-1}>
-              <span>Preview complete</span><strong>That’s the success state.</strong><p>No details were submitted or saved.</p>
-              <button type="button" onClick={() => setJoined(false)}>Try the form again</button>
-            </div> : <form className="waitlist-form" onSubmit={previewWaitlist}>
-              <label><span>Suburb or postcode</span><input name="location" type="text" autoComplete="postal-code" placeholder="e.g. Pakenham 3810" value={location} onChange={(event) => setLocation(event.target.value)} required /></label>
-              <label><span>Travel distance</span><select name="distance" value={distance} onChange={(event) => setDistance(event.target.value)} required><option value="" disabled>Select distance</option><option value="30">Up to 30 km</option><option value="60">Up to 60 km</option><option value="100">Up to 100 km</option><option value="anywhere">Happy to travel</option></select></label>
-              <button type="submit"><span>Join the waitlist</span><Arrow /></button>
-              <small>Prototype only — these details are not submitted yet.</small>
+            {waitlistStatus === 'success' ? <div className="waitlist-success" ref={waitlistSuccess} role="status" tabIndex={-1}>
+              <span>You’re on the list</span><strong>We’ve got your location.</strong><p>GWG will be in touch when a suitable shoot is confirmed nearby.</p>
+              <button type="button" onClick={() => setWaitlistStatus('idle')}>Add another location</button>
+            </div> : <form className="waitlist-form" action={formEndpoints.waitlist} method="POST" onSubmit={sendWaitlist}>
+              <input type="hidden" name="_subject" value="New GWG event waitlist request" />
+              <input type="hidden" name="source_page" value="Events page" />
+              <label><span>Suburb or postcode</span><input name="location" type="text" autoComplete="postal-code" placeholder="e.g. Pakenham 3810" required /></label>
+              <label><span>Travel distance</span><select name="distance" defaultValue="" required><option value="" disabled>Select distance</option><option value="30">Up to 30 km</option><option value="60">Up to 60 km</option><option value="100">Up to 100 km</option><option value="anywhere">Happy to travel</option></select></label>
+              <label className="waitlist-form__wide"><span>Email</span><input name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
+              <button type="submit" disabled={waitlistStatus === 'submitting'}><span>{waitlistStatus === 'submitting' ? 'Joining…' : 'Join the waitlist'}</span><Arrow /></button>
+              {waitlistStatus === 'error' && <p className="form-error" role="alert">That didn’t send. Please try again or <a href="mailto:girlswithgunsaustralia@gmail.com">email GWG directly</a>.</p>}
+              <small>Your details go directly to Girls With Guns Australia.</small>
             </form>}
           </div>
         </div>
@@ -1192,7 +1218,7 @@ function CoachingPage() {
   const root = useRef<HTMLDivElement>(null);
   const success = useRef<HTMLDivElement>(null);
   const [lightHeader, setLightHeader] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [formStatus, setFormStatus] = useState<FormStatus>('idle');
 
   useEffect(() => {
     document.title = '1-on-1 Coaching — Girls With Guns Australia';
@@ -1201,8 +1227,8 @@ function CoachingPage() {
   }, []);
 
   useEffect(() => {
-    if (submitted) window.requestAnimationFrame(() => success.current?.focus({ preventScroll: true }));
-  }, [submitted]);
+    if (formStatus === 'success') window.requestAnimationFrame(() => success.current?.focus({ preventScroll: true }));
+  }, [formStatus]);
 
   const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -1218,10 +1244,7 @@ function CoachingPage() {
     } });
   };
 
-  const previewEnquiry = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSubmitted(true);
-  };
+  const sendEnquiry = (event: FormEvent<HTMLFormElement>) => submitForm(event, formEndpoints.coaching, setFormStatus);
 
   useLayoutEffect(() => {
     if (!root.current) return;
@@ -1340,10 +1363,12 @@ function CoachingPage() {
             <a href="/events#event" data-coaching-reveal>Prefer a group shoot day? <Arrow /></a>
           </header>
           <div className="coaching-enquiry__panel" data-coaching-reveal>
-            {submitted ? <div className="coaching-enquiry__success" ref={success} role="status" tabIndex={-1}>
-              <span>Preview complete</span><h3>That’s the enquiry success state.</h3><p>No details were submitted or saved.</p>
-              <button type="button" onClick={() => setSubmitted(false)}>Try the form again</button>
-            </div> : <form className="coaching-form" onSubmit={previewEnquiry}>
+            {formStatus === 'success' ? <div className="coaching-enquiry__success" ref={success} role="status" tabIndex={-1}>
+              <span>Enquiry sent</span><h3>Thanks — GWG has your details.</h3><p>GWG will read through your enquiry and get back to you about the next step.</p>
+              <button type="button" onClick={() => setFormStatus('idle')}>Send another enquiry</button>
+            </div> : <form className="coaching-form" action={formEndpoints.coaching} method="POST" onSubmit={sendEnquiry}>
+              <input type="hidden" name="_subject" value="New GWG coaching enquiry" />
+              <input type="hidden" name="source_page" value="Coaching page" />
               <div className="coaching-form__grid">
                 <label><span>Name</span><input name="name" type="text" autoComplete="name" required /></label>
                 <label><span>Email</span><input name="email" type="email" autoComplete="email" required /></label>
@@ -1352,8 +1377,9 @@ function CoachingPage() {
                 <label className="coaching-form__wide"><span>Experience level</span><select name="experience" defaultValue="" required><option value="" disabled>Select one</option><option value="first-time">First time at a range</option><option value="some-experience">I have tried it before</option><option value="returning">I shoot occasionally</option></select></label>
                 <label className="coaching-form__wide"><span>What would you like help with?</span><textarea name="message" rows={5} required /></label>
               </div>
-              <button className="coaching-form__submit" type="submit"><span>Send coaching enquiry</span><Arrow /></button>
-              <small>Prototype only — this enquiry is not submitted yet.</small>
+              <button className="coaching-form__submit" type="submit" disabled={formStatus === 'submitting'}><span>{formStatus === 'submitting' ? 'Sending…' : 'Send coaching enquiry'}</span><Arrow /></button>
+              {formStatus === 'error' && <p className="form-error" role="alert">That didn’t send. Please try again or <a href="mailto:girlswithgunsaustralia@gmail.com">email GWG directly</a>.</p>}
+              <small>Your enquiry goes directly to Girls With Guns Australia.</small>
             </form>}
           </div>
         </div>
@@ -1381,7 +1407,7 @@ function PrivateEventsPage() {
   const root = useRef<HTMLDivElement>(null);
   const success = useRef<HTMLDivElement>(null);
   const [lightHeader, setLightHeader] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [formStatus, setFormStatus] = useState<FormStatus>('idle');
 
   useEffect(() => {
     document.title = 'Private Events — Girls With Guns Australia';
@@ -1390,8 +1416,8 @@ function PrivateEventsPage() {
   }, []);
 
   useEffect(() => {
-    if (submitted) window.requestAnimationFrame(() => success.current?.focus({ preventScroll: true }));
-  }, [submitted]);
+    if (formStatus === 'success') window.requestAnimationFrame(() => success.current?.focus({ preventScroll: true }));
+  }, [formStatus]);
 
   const navigateSection = (event: MouseEvent<HTMLDivElement>) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -1407,10 +1433,7 @@ function PrivateEventsPage() {
     } });
   };
 
-  const previewEnquiry = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSubmitted(true);
-  };
+  const sendEnquiry = (event: FormEvent<HTMLFormElement>) => submitForm(event, formEndpoints.privateEvents, setFormStatus);
 
   useLayoutEffect(() => {
     if (!root.current) return;
@@ -1535,10 +1558,12 @@ function PrivateEventsPage() {
             <a href="/events#event" data-private-reveal>Looking for a public shoot day? <Arrow /></a>
           </header>
           <div className="private-enquiry__panel" data-private-reveal>
-            {submitted ? <div className="private-enquiry__success" ref={success} role="status" tabIndex={-1}>
-              <span>Preview complete</span><h3>That’s the private-event success state.</h3><p>No details were submitted or saved.</p>
-              <button type="button" onClick={() => setSubmitted(false)}>Try the form again</button>
-            </div> : <form className="private-form" onSubmit={previewEnquiry}>
+            {formStatus === 'success' ? <div className="private-enquiry__success" ref={success} role="status" tabIndex={-1}>
+              <span>Enquiry sent</span><h3>Your group is on GWG’s radar.</h3><p>GWG will review your group, area and timeframe, then get back to you about what may be possible.</p>
+              <button type="button" onClick={() => setFormStatus('idle')}>Send another enquiry</button>
+            </div> : <form className="private-form" action={formEndpoints.privateEvents} method="POST" onSubmit={sendEnquiry}>
+              <input type="hidden" name="_subject" value="New GWG private event enquiry" />
+              <input type="hidden" name="source_page" value="Private events page" />
               <div className="private-form__grid">
                 <label><span>Name</span><input name="name" type="text" autoComplete="name" required /></label>
                 <label><span>Email</span><input name="email" type="email" autoComplete="email" required /></label>
@@ -1549,8 +1574,9 @@ function PrivateEventsPage() {
                 <label className="private-form__wide"><span>Event type</span><select name="eventType" defaultValue="" required><option value="" disabled>Select one</option><option value="hens">Hens or celebration</option><option value="birthday">Birthday</option><option value="workplace">Workplace or team event</option><option value="private-group">Private group</option></select></label>
                 <label className="private-form__wide"><span>Anything else GWG should know?</span><textarea name="notes" rows={5} required /></label>
               </div>
-              <button className="private-form__submit" type="submit"><span>Send private event enquiry</span><Arrow /></button>
-              <small>Prototype only — this enquiry is not submitted yet.</small>
+              <button className="private-form__submit" type="submit" disabled={formStatus === 'submitting'}><span>{formStatus === 'submitting' ? 'Sending…' : 'Send private event enquiry'}</span><Arrow /></button>
+              {formStatus === 'error' && <p className="form-error" role="alert">That didn’t send. Please try again or <a href="mailto:girlswithgunsaustralia@gmail.com">email GWG directly</a>.</p>}
+              <small>Your enquiry goes directly to Girls With Guns Australia.</small>
             </form>}
           </div>
         </div>
