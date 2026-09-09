@@ -1587,19 +1587,27 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .shop-products { display: grid; grid-template-columns: minmax(0, 1.26fr) repeat(2, minmax(0, 1fr)); gap: clamp(26px, 3.2vw, 52px); align-items: start; margin-top: clamp(72px, 7vw, 112px); }
 .shop-product { min-width: 0; padding-top: 12px; border-top: 1px solid #4e3e343a; }
 .shop-product__gallery { min-width: 0; }
-.shop-product__media { position: relative; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; background: #221c1a; }
+.shop-product__media { position: relative; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; background: #221c1a; touch-action: pan-y; }
 .shop-product__media::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 1px #fff1; background: linear-gradient(180deg, transparent 68%, #0e0b0b80); }
-.shop-product__media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(.84) contrast(1.025) brightness(.9); animation: shop-product-view-in 260ms ease both; transition: transform 650ms var(--ease), filter 350ms; }
-@keyframes shop-product-view-in { from { opacity: .55; transform: scale(1.012); } to { opacity: 1; transform: scale(1); } }
-.shop-product:hover .shop-product__media img { transform: scale(1.018); filter: saturate(.94) contrast(1.025) brightness(.94); }
+.shop-product__slides { position: absolute; inset: 0; }
+.shop-product__slide { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; object-fit: cover; object-position: center; filter: saturate(.84) contrast(1.025) brightness(.9); transition: opacity 260ms ease, transform 430ms var(--ease), filter 350ms; }
+.shop-product__slides[data-direction='forward'] .shop-product__slide:not(.is-active) { transform: translateX(-5%) scale(1.012); }
+.shop-product__slides[data-direction='backward'] .shop-product__slide:not(.is-active) { transform: translateX(5%) scale(1.012); }
+.shop-product__slide.is-active { z-index: 1; opacity: 1; transform: translateX(0) scale(1); }
+.shop-product:hover .shop-product__slide.is-active { transform: translateX(0) scale(1.018); filter: saturate(.94) contrast(1.025) brightness(.94); }
+.shop-product__carousel-controls { position: absolute; z-index: 3; top: 50%; right: 12px; left: 12px; display: flex; justify-content: space-between; pointer-events: none; transform: translateY(-50%); }
+.shop-product__carousel-button { display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 1px solid #fff3; color: var(--white); background: #100e0ed4; box-shadow: 0 8px 24px #0005; backdrop-filter: blur(8px); pointer-events: auto; transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, opacity 180ms ease, transform 220ms var(--ease); }
+.shop-product__carousel-button .arrow { width: 22px; height: 15px; }
+.shop-product__carousel-button--previous .arrow { transform: rotate(180deg); }
+.shop-product__carousel-button:not(:disabled):hover { color: var(--pink-bright); border-color: #ec9ab580; background-color: #100e0ef2; }
+.shop-product__carousel-button--previous:not(:disabled):hover { transform: translateX(-3px); }
+.shop-product__carousel-button--next:not(:disabled):hover { transform: translateX(3px); }
+.shop-product__carousel-button:disabled { opacity: .25; cursor: default; }
+.shop-product__carousel-button:focus-visible { outline: 2px solid var(--pink-bright); outline-offset: 3px; }
+.shop-product__carousel-progress { position: absolute; z-index: 3; top: 14px; left: 50%; display: flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 10px; background: #100e0ea8; transform: translateX(-50%); }
+.shop-product__carousel-progress span { width: 6px; height: 6px; border-radius: 99px; background: #f8f2e866; transition: width 260ms var(--ease), background-color 180ms ease; }
+.shop-product__carousel-progress span.is-active { width: 20px; background: var(--pink-bright); }
 .shop-product__media figcaption { position: absolute; z-index: 2; right: 15px; bottom: 13px; left: 15px; display: flex; justify-content: space-between; gap: 16px; color: #f2e9dfcf; font-size: .6rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.shop-product__views { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-right: 1px solid #4e3e3442; border-bottom: 1px solid #4e3e3442; }
-.shop-product__views button { display: flex; align-items: center; gap: 9px; min-height: 47px; padding: 0 13px; border: 0; border-left: 1px solid #4e3e3442; color: #746259; background: #eee5d8; font: 700 .68rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; transition: color 180ms ease, background-color 180ms ease; }
-.shop-product__views button span { color: #a78779; font-size: .55rem; letter-spacing: .1em; transition: color 180ms ease; }
-.shop-product__views button:hover { color: var(--ink); background: #f7efe4; }
-.shop-product__views button[aria-pressed='true'] { color: var(--white); background: var(--ink); }
-.shop-product__views button[aria-pressed='true'] span { color: var(--pink); }
-.shop-product__views button:focus-visible { position: relative; z-index: 2; outline: 2px solid var(--pink-deep); outline-offset: -3px; }
 .shop-product__heading { display: flex; align-items: start; justify-content: space-between; gap: 18px; margin-top: 23px; }
 .shop-product__heading h3 { margin: 0; font: 600 clamp(1.85rem, 2.45vw, 2.75rem)/.98 var(--serif); letter-spacing: -.025em; }
 .shop-product__heading strong { padding-top: 5px; color: var(--pink-deep); font-size: .86rem; letter-spacing: .08em; }
@@ -1759,5 +1767,5 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 
 @media (prefers-reduced-motion: reduce) {
   [data-shop-hero-reveal], [data-shop-hero-media], [data-shop-hero-image], [data-shop-reveal] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
-  .shop-cart__backdrop, .shop-cart__drawer, .shop-product__media img, .shop-product__views button, .shop-product__views button span { transition: none !important; animation: none !important; }
+  .shop-cart__backdrop, .shop-cart__drawer, .shop-product__slide, .shop-product__carousel-button, .shop-product__carousel-progress span { transition: none !important; animation: none !important; }
 }

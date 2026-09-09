@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -1662,21 +1662,71 @@ function loadSavedCart(): CartLine[] {
 
 function ProductMediaGallery({ product, index }: { product: MerchandiseProduct; index: number }) {
   const [activeImage, setActiveImage] = useState(0);
+  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
   const image = product.images[activeImage];
 
+  const showImage = (nextImage: number) => {
+    if (nextImage < 0 || nextImage >= product.images.length || nextImage === activeImage) return;
+    setDirection(nextImage > activeImage ? 'forward' : 'backward');
+    setActiveImage(nextImage);
+  };
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLElement>) => {
+    swipeStart.current = { x: event.clientX, y: event.clientY };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerUp = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!swipeStart.current) return;
+    const distanceX = event.clientX - swipeStart.current.x;
+    const distanceY = event.clientY - swipeStart.current.y;
+    swipeStart.current = null;
+    if (Math.abs(distanceX) < 42 || Math.abs(distanceX) <= Math.abs(distanceY)) return;
+    showImage(activeImage + (distanceX < 0 ? 1 : -1));
+  };
+
   return <div className="shop-product__gallery">
-    <figure className="shop-product__media">
-      <img key={image.src} src={image.src} alt={image.alt} width="1120" height="1400" loading={index === 0 && activeImage === 0 ? 'eager' : 'lazy'} />
-      <figcaption><span>0{index + 1}</span><span>{image.label} / {product.note}</span></figcaption>
+    <figure
+      className="shop-product__media"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={() => { swipeStart.current = null; }}
+    >
+      <div className="shop-product__slides" data-direction={direction}>
+        {product.images.map((option, optionIndex) => <img
+          className={`shop-product__slide${activeImage === optionIndex ? ' is-active' : ''}`}
+          key={option.src}
+          src={option.src}
+          alt={activeImage === optionIndex ? option.alt : ''}
+          aria-hidden={activeImage !== optionIndex}
+          draggable="false"
+          width="1120"
+          height="1400"
+          loading={index === 0 && optionIndex === 0 ? 'eager' : 'lazy'}
+        />)}
+      </div>
+      <div className="shop-product__carousel-controls">
+        <button
+          className="shop-product__carousel-button shop-product__carousel-button--previous"
+          type="button"
+          aria-label={`Show previous view of ${product.name}`}
+          disabled={activeImage === 0}
+          onClick={() => showImage(activeImage - 1)}
+        ><Arrow /></button>
+        <button
+          className="shop-product__carousel-button shop-product__carousel-button--next"
+          type="button"
+          aria-label={`Show next view of ${product.name}`}
+          disabled={activeImage === product.images.length - 1}
+          onClick={() => showImage(activeImage + 1)}
+        ><Arrow /></button>
+      </div>
+      <div className="shop-product__carousel-progress" aria-hidden="true">
+        {product.images.map((option, optionIndex) => <span className={activeImage === optionIndex ? 'is-active' : ''} key={option.label} />)}
+      </div>
+      <figcaption aria-live="polite"><span>0{index + 1}</span><span>0{activeImage + 1} / 0{product.images.length} · {image.label} / {product.note}</span></figcaption>
     </figure>
-    <div className="shop-product__views" aria-label={`Choose a view of ${product.name}`}>
-      {product.images.map((option, optionIndex) => <button
-        type="button"
-        key={option.src}
-        aria-pressed={activeImage === optionIndex}
-        onClick={() => setActiveImage(optionIndex)}
-      ><span>0{optionIndex + 1}</span>{option.label}</button>)}
-    </div>
   </div>;
 }
 
