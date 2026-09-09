@@ -15,7 +15,7 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <svg className={diagonal ? 'arrow arrow--diagonal' : 'arrow'} viewBox="0 0 28 20" fill="none" aria-hidden="true"><path d="M2 10h23M17 3l7 7-7 7" /></svg>;
 }
 
-type SitePage = 'home' | 'events' | 'about' | 'gallery' | 'coaching' | 'private';
+type SitePage = 'home' | 'events' | 'about' | 'gallery' | 'coaching' | 'private' | 'shop';
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 const formEndpoints = {
@@ -43,7 +43,7 @@ async function submitForm(event: FormEvent<HTMLFormElement>, endpoint: string, s
   }
 }
 
-function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPage?: SitePage }) {
+function Navigation({ light, currentPage = 'home', cartCount = 0, onCartOpen }: { light: boolean; currentPage?: SitePage; cartCount?: number; onCartOpen?: () => void }) {
   const [open, setOpen] = useState(false);
   const menu = useRef<HTMLElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -53,14 +53,15 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
     if (item === 'Gallery') return currentPage === 'gallery' ? '#gallery' : '/gallery#gallery';
     if (item === 'Coaching') return currentPage === 'coaching' ? '#coaching' : '/coaching#coaching';
     if (item === 'Private Events') return currentPage === 'private' ? '#private-events' : '/private-events#private-events';
-    return currentPage === 'home' ? '#explore' : '/#explore';
+    return currentPage === 'shop' ? '#top' : '/shop#top';
   };
   const navIsCurrent = (item: string) =>
     (currentPage === 'events' && item === 'Events') ||
     (currentPage === 'about' && item === 'About') ||
     (currentPage === 'gallery' && item === 'Gallery') ||
     (currentPage === 'coaching' && item === 'Coaching') ||
-    (currentPage === 'private' && item === 'Private Events');
+    (currentPage === 'private' && item === 'Private Events') ||
+    (currentPage === 'shop' && item === 'Shop');
 
   useEffect(() => {
     if (!open) return;
@@ -102,7 +103,7 @@ function Navigation({ light, currentPage = 'home' }: { light: boolean; currentPa
         <a className="nav__mobile-cta" href={currentPage === 'events' ? '#event-details' : '/events#event-details'} onClick={() => setOpen(false)}>Book next shoot <Arrow /></a>
         <p className="nav__signoff">Come curious. Leave confident.</p>
       </nav>
-      <a className="header-cta" href={currentPage === 'events' ? '#event-details' : '/events#event-details'}><span>Book next shoot</span><Arrow /></a>
+      {currentPage === 'shop' ? <button className="header-cta header-cart" type="button" onClick={onCartOpen} aria-label={`Open cart with ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}><span>Cart</span><b aria-hidden="true">{String(cartCount).padStart(2, '0')}</b></button> : <a className="header-cta" href={currentPage === 'events' ? '#event-details' : '/events#event-details'}><span>Book next shoot</span><Arrow /></a>}
       <button ref={trigger} className="menu-button" type="button" aria-expanded={open} aria-controls="primary-navigation" aria-label={open ? 'Close menu' : 'Open menu'} onClick={() => setOpen(!open)}><span /><span /></button>
     </header>
   );
@@ -279,7 +280,7 @@ const exploreItems = [
   { title: 'Gallery', detail: 'Real shoot-day imagery.', image: '/photos/gwg-sale-target-duo.jpg', position: 'center 44%', href: '/gallery#gallery' },
   { title: '1-on-1 Coaching', detail: 'Learn at your own pace.', image: '/photos/gwg-sale-rifle-guidance.jpg', position: '57% 47%', href: '/coaching#coaching' },
   { title: 'Private Events', detail: 'Hens, birthdays, teams.', image: '/photos/gwg-sale-group.jpg', position: 'center 48%', href: '/private-events#private-events' },
-  { title: 'Shop GWG', detail: 'Merch.', image: null, position: 'center', href: '#prototype-end' },
+  { title: 'Shop GWG', detail: 'Zip-ups, caps and polos.', image: null, position: 'center', href: '/shop#shop' },
 ];
 
 function ExploreVisual({ item, mobile = false }: { item: typeof exploreItems[number]; mobile?: boolean }) {
@@ -389,7 +390,7 @@ function SiteFooter({ currentPage = 'home' }: { currentPage?: SitePage }) {
     <div className="site-footer__inner">
       <a className="footer-brand" href={currentPage === 'home' ? '#top' : '/#top'} aria-label="Girls With Guns Australia, home"><img src="/gwg-logo-transparent.png" alt="" width="1563" height="1047" /><span>Girls With<br />Guns Australia</span></a>
       <nav className="footer-nav" aria-label="Footer navigation">
-        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'about' ? '#story' : '/about#story'} aria-current={currentPage === 'about' ? 'page' : undefined}>About</a><a href={currentPage === 'gallery' ? '#gallery' : '/gallery#gallery'} aria-current={currentPage === 'gallery' ? 'page' : undefined}>Gallery</a><a href={currentPage === 'coaching' ? '#coaching' : '/coaching#coaching'} aria-current={currentPage === 'coaching' ? 'page' : undefined}>Coaching</a><a href={currentPage === 'private' ? '#private-events' : '/private-events#private-events'} aria-current={currentPage === 'private' ? 'page' : undefined}>Private Events</a><a href={currentPage === 'home' ? '#explore' : '/#explore'}>Shop</a>
+        <a href={currentPage === 'events' ? '#event' : '/events#event'} aria-current={currentPage === 'events' ? 'page' : undefined}>Events</a><a href={currentPage === 'about' ? '#story' : '/about#story'} aria-current={currentPage === 'about' ? 'page' : undefined}>About</a><a href={currentPage === 'gallery' ? '#gallery' : '/gallery#gallery'} aria-current={currentPage === 'gallery' ? 'page' : undefined}>Gallery</a><a href={currentPage === 'coaching' ? '#coaching' : '/coaching#coaching'} aria-current={currentPage === 'coaching' ? 'page' : undefined}>Coaching</a><a href={currentPage === 'private' ? '#private-events' : '/private-events#private-events'} aria-current={currentPage === 'private' ? 'page' : undefined}>Private Events</a><a href={currentPage === 'shop' ? '#top' : '/shop#top'} aria-current={currentPage === 'shop' ? 'page' : undefined}>Shop</a>
       </nav>
       <div className="footer-social"><a href="https://www.instagram.com/gwgaustralia/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/groups/1732825510500169/" target="_blank" rel="noreferrer">Facebook group</a><a href="mailto:girlswithgunsaustralia@gmail.com">Email GWG</a><a href="tel:+61408682632">0408 682 632</a></div>
       <p className="site-footer__signoff">Come curious.<br /><em>Leave confident.</em></p>
@@ -1586,6 +1587,318 @@ function PrivateEventsPage() {
   </div>;
 }
 
+type MerchandiseProduct = {
+  id: 'zip-up' | 'cap' | 'polo';
+  name: string;
+  shortName: string;
+  price: number;
+  sizes: string[];
+  image: string;
+  alt: string;
+  description: string;
+  note: string;
+};
+
+type CartLine = { productId: MerchandiseProduct['id']; size: string; quantity: number };
+type DeliveryMethod = 'shipping-au' | 'shipping-worldwide' | 'local-pickup' | 'event-pickup';
+
+const merchandise: MerchandiseProduct[] = [
+  {
+    id: 'zip-up',
+    name: 'GWG Zip-Up Hoodie',
+    shortName: 'Zip-up',
+    price: 55,
+    sizes: ['10', '12', '14', '16', '18', '20'],
+    image: '/merch/gwg-zip-up.webp',
+    alt: 'Back view of the black Girls With Guns Australia zip-up hoodie',
+    description: 'Black full zip-up hoodie with the Girls With Guns back graphic.',
+    note: 'Sizes 10–20',
+  },
+  {
+    id: 'cap',
+    name: 'GWG Black Cap',
+    shortName: 'Cap',
+    price: 20,
+    sizes: ['One size'],
+    image: '/merch/gwg-cap.webp',
+    alt: 'Current black Girls With Guns Australia cap with pink embroidery',
+    description: 'The current black cap with bright pink GWG embroidery.',
+    note: 'One size',
+  },
+  {
+    id: 'polo',
+    name: 'GWG Polo Shirt',
+    shortName: 'Polo',
+    price: 35,
+    sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
+    image: '/merch/gwg-polo.webp',
+    alt: 'Back view of the black Girls With Guns Australia polo shirt',
+    description: 'Black short-sleeve polo with the GWG and Shield Sights back graphics.',
+    note: 'Sizes XS–2XL',
+  },
+];
+
+const money = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', minimumFractionDigits: 0 });
+
+function loadSavedCart(): CartLine[] {
+  try {
+    const saved = JSON.parse(localStorage.getItem('gwg-cart') ?? '[]');
+    const lines = Array.isArray(saved) ? saved : saved?.version === 1 && Array.isArray(saved.lines) ? saved.lines : [];
+    return lines.filter((line: unknown): line is CartLine => {
+      if (!line || typeof line !== 'object') return false;
+      const candidate = line as Partial<CartLine>;
+      const product = merchandise.find((item) => item.id === candidate.productId);
+      return Boolean(product && typeof candidate.size === 'string' && product.sizes.includes(candidate.size) && Number.isInteger(candidate.quantity) && candidate.quantity! > 0 && candidate.quantity! <= 20);
+    });
+  } catch {
+    return [];
+  }
+}
+
+function ShopPage() {
+  const root = useRef<HTMLDivElement>(null);
+  const cartPanel = useRef<HTMLElement>(null);
+  const cartClose = useRef<HTMLButtonElement>(null);
+  const cartOpener = useRef<HTMLElement | null>(null);
+  const addedTimer = useRef<number | undefined>(undefined);
+  const [lightHeader, setLightHeader] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>('shipping-au');
+  const [eventReference, setEventReference] = useState('');
+  const [addedProduct, setAddedProduct] = useState<MerchandiseProduct['id'] | null>(null);
+  const [selectedSizes, setSelectedSizes] = useState<Record<MerchandiseProduct['id'], string>>({
+    'zip-up': merchandise[0].sizes[0],
+    cap: merchandise[1].sizes[0],
+    polo: merchandise[2].sizes[0],
+  });
+  const [cart, setCart] = useState<CartLine[]>(loadSavedCart);
+
+  const cartCount = cart.reduce((total, line) => total + line.quantity, 0);
+  const subtotal = cart.reduce((total, line) => total + (merchandise.find((product) => product.id === line.productId)?.price ?? 0) * line.quantity, 0);
+
+  useEffect(() => {
+    document.title = 'Shop | Girls With Guns Australia';
+    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (description) description.content = 'Shop Girls With Guns Australia zip-up hoodies, caps and polo shirts.';
+    const restoreHash = window.setTimeout(() => {
+      const target = location.hash ? document.querySelector<HTMLElement>(location.hash) : null;
+      if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }, 100);
+    return () => window.clearTimeout(restoreHash);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('gwg-cart', JSON.stringify({ version: 1, lines: cart }));
+  }, [cart]);
+
+  useEffect(() => () => window.clearTimeout(addedTimer.current), []);
+
+  const openCart = () => {
+    cartOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setCartOpen(true);
+  };
+
+  const closeCart = () => setCartOpen(false);
+
+  useEffect(() => {
+    if (!cartOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const background = root.current?.querySelectorAll<HTMLElement>(':scope > header, :scope > main, :scope > footer, :scope > .shop-cart-fab');
+    background?.forEach((element) => { element.inert = true; });
+    document.body.style.overflow = 'hidden';
+    cartClose.current?.focus({ preventScroll: true });
+
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { closeCart(); return; }
+      if (event.key !== 'Tab' || !cartPanel.current) return;
+      const controls = Array.from(cartPanel.current.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'));
+      if (!controls.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      background?.forEach((element) => { element.inert = false; });
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKey);
+      window.requestAnimationFrame(() => cartOpener.current?.focus({ preventScroll: true }));
+    };
+  }, [cartOpen]);
+
+  useLayoutEffect(() => {
+    if (!root.current) return;
+    const app = root.current;
+    const collection = app.querySelector<HTMLElement>('[data-shop-collection]');
+    const heroReveals = app.querySelectorAll<HTMLElement>('[data-shop-hero-reveal]');
+    const heroMedia = app.querySelector<HTMLElement>('[data-shop-hero-media]');
+    const heroImage = app.querySelector<HTMLElement>('[data-shop-hero-image]');
+    const sections = app.querySelectorAll<HTMLElement>('[data-shop-section]');
+    const mm = gsap.matchMedia();
+
+    if (collection) {
+      const header = ScrollTrigger.create({
+        trigger: collection,
+        start: 'top 100px',
+        onEnter: () => setLightHeader(true),
+        onLeaveBack: () => setLightHeader(false),
+      });
+      mm.add('(prefers-reduced-motion: reduce)', () => () => header.kill());
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) mm.add('(prefers-reduced-motion: no-preference)', () => () => header.kill());
+    }
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const intro = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      intro
+        .fromTo(heroReveals, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .52, stagger: .07 })
+        .fromTo(heroMedia, { clipPath: 'inset(5% 4% 5% 4%)', opacity: 0 }, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: .68 }, .08)
+        .fromTo(heroImage, { scale: 1.035 }, { scale: 1, duration: .8 }, .1);
+
+      const reveals = Array.from(sections).map((section) => {
+        const targets = section.querySelectorAll<HTMLElement>('[data-shop-reveal]');
+        return gsap.fromTo(targets, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .48, stagger: .065, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 78%', once: true } });
+      });
+      return () => { intro.kill(); reveals.forEach((animation) => animation.kill()); };
+    });
+
+    return () => mm.revert();
+  }, []);
+
+  const addToCart = (product: MerchandiseProduct) => {
+    const size = selectedSizes[product.id];
+    setCart((current) => {
+      const existing = current.find((line) => line.productId === product.id && line.size === size);
+      if (existing) return current.map((line) => line === existing ? { ...line, quantity: Math.min(20, line.quantity + 1) } : line);
+      return [...current, { productId: product.id, size, quantity: 1 }];
+    });
+    window.clearTimeout(addedTimer.current);
+    setAddedProduct(product.id);
+    addedTimer.current = window.setTimeout(() => setAddedProduct(null), 1500);
+  };
+
+  const changeQuantity = (line: CartLine, amount: number) => {
+    setCart((current) => current.flatMap((item) => {
+      if (item.productId !== line.productId || item.size !== line.size) return [item];
+      const quantity = item.quantity + amount;
+      return quantity > 0 ? [{ ...item, quantity: Math.min(20, quantity) }] : [];
+    }));
+  };
+
+  const removeLine = (line: CartLine) => setCart((current) => current.filter((item) => item.productId !== line.productId || item.size !== line.size));
+
+  return <div className="shop-page app" ref={root} id="top">
+    <a className="skip-link" href="#shop">Skip to the shop</a>
+    <Navigation light={lightHeader} currentPage="shop" cartCount={cartCount} onCartOpen={openCart} />
+    <main>
+      <section className="shop-hero" aria-labelledby="shop-hero-heading">
+        <div className="shop-hero__copy">
+          <p className="eyebrow" data-shop-hero-reveal><span />Girls With Guns / Merchandise</p>
+          <h1 id="shop-hero-heading" data-shop-hero-reveal>Range day,<br /><em>off the range.</em></h1>
+          <p data-shop-hero-reveal>The pieces you have seen at GWG events—now collected in one place.</p>
+          <a className="shop-hero__jump" href="#shop" data-shop-hero-reveal>Shop the collection <Arrow /></a>
+        </div>
+        <figure className="shop-hero__media" data-shop-hero-media>
+          <img src="/merch/gwg-cap.webp" alt="Current Girls With Guns Australia black cap" width="1120" height="1400" fetchPriority="high" data-shop-hero-image />
+          <figcaption><span>Current black cap</span><span>GWG / 2026</span></figcaption>
+          <div className="shop-hero__tag" aria-label="Three merchandise pieces available now"><span>Merch drop</span><strong>03</strong><small>Pieces / available now</small></div>
+        </figure>
+      </section>
+
+      <section className="shop-collection" id="shop" data-shop-collection data-shop-section aria-labelledby="shop-heading" tabIndex={-1}>
+        <div className="shop-collection__inner">
+          <header className="shop-collection__header">
+            <div>
+              <p className="eyebrow eyebrow--dark" data-shop-reveal><span />01 / The collection</p>
+              <h2 id="shop-heading" data-shop-reveal>Wear the<br /><em>range energy.</em></h2>
+            </div>
+            <p data-shop-reveal>Three straightforward GWG pieces, made for shoot days and everywhere after. Select a size, add it to your cart, then choose how you want to receive it.</p>
+          </header>
+
+          <div className="shop-products">
+            {merchandise.map((product, index) => <article className={`shop-product shop-product--${product.id}`} key={product.id} data-shop-reveal>
+              <figure className="shop-product__media">
+                <img src={product.image} alt={product.alt} width="1120" height="1400" loading={index === 0 ? 'eager' : 'lazy'} />
+                <figcaption><span>0{index + 1}</span><span>{product.note}</span></figcaption>
+              </figure>
+              <div className="shop-product__heading"><h3>{product.name}</h3><strong>{money.format(product.price)}</strong></div>
+              <p>{product.description}</p>
+              <div className="shop-product__controls">
+                <label><span>Size</span><select value={selectedSizes[product.id]} onChange={(event) => setSelectedSizes((sizes) => ({ ...sizes, [product.id]: event.target.value }))}>{product.sizes.map((size) => <option key={size}>{size}</option>)}</select></label>
+                <button type="button" onClick={() => addToCart(product)}><span>{addedProduct === product.id ? 'Added' : 'Add to cart'}</span><Arrow /></button>
+              </div>
+            </article>)}
+          </div>
+          <p className="shop-collection__accuracy" data-shop-reveal>Product imagery is based on the current GWG merchandise. Colours may vary slightly from screen to screen.</p>
+        </div>
+      </section>
+
+      <section className="shop-fulfilment" data-shop-section aria-labelledby="fulfilment-heading">
+        <div className="shop-fulfilment__inner">
+          <header>
+            <p className="eyebrow" data-shop-reveal><span />02 / Get it your way</p>
+            <h2 id="fulfilment-heading" data-shop-reveal>From GWG<br /><em>to your hands.</em></h2>
+            <p data-shop-reveal>Choose your preferred option in the cart. Shipping rates are still being confirmed, so payment stays off until every cost is clear.</p>
+          </header>
+          <ol className="shop-fulfilment__list">
+            <li data-shop-reveal><span>01</span><div><h3>Australia shipping</h3><p>Delivered Australia-wide. The rate will be shown before payment once confirmed.</p></div></li>
+            <li data-shop-reveal><span>02</span><div><h3>Worldwide shipping</h3><p>International delivery is planned, with the final rate confirmed before launch.</p></div></li>
+            <li data-shop-reveal><span>03</span><div><h3>Pakenham East pick-up</h3><p>GWG will message when your order is ready. Please allow 1–3 business days for confirmation.</p></div></li>
+            <li data-shop-reveal><span>04</span><div><h3>Event pick-up</h3><p>Already booked through Humanitix? Add your booking reference so GWG can match the order to your shoot.</p></div></li>
+          </ol>
+        </div>
+      </section>
+    </main>
+    <SiteFooter currentPage="shop" />
+
+    <button className="shop-cart-fab" type="button" onClick={openCart} aria-label={`Open cart with ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}><span>Cart</span><b>{String(cartCount).padStart(2, '0')}</b></button>
+
+    <div className={'shop-cart' + (cartOpen ? ' shop-cart--open' : '')} aria-hidden={!cartOpen}>
+      <button className="shop-cart__backdrop" type="button" aria-label="Close cart" tabIndex={cartOpen ? 0 : -1} onClick={closeCart} />
+      <aside className="shop-cart__drawer" ref={cartPanel} role="dialog" aria-modal="true" aria-labelledby="cart-heading">
+        <header className="shop-cart__header">
+          <div><span>Your cart</span><h2 id="cart-heading">Range bag</h2></div>
+          <button ref={cartClose} type="button" onClick={closeCart} aria-label="Close cart"><span /><span /></button>
+        </header>
+
+        <div className="shop-cart__body">
+          {cart.length === 0 ? <div className="shop-cart__empty"><span>00 / Empty</span><h3>Nothing in the bag yet.</h3><p>Choose a piece and it will be waiting here.</p><button type="button" onClick={closeCart}>Keep shopping <Arrow /></button></div> : <>
+            <ul className="shop-cart__lines">
+              {cart.map((line) => {
+                const product = merchandise.find((item) => item.id === line.productId)!;
+                return <li key={`${line.productId}-${line.size}`}>
+                  <img src={product.image} alt="" width="112" height="140" />
+                  <div className="shop-cart__line-copy"><span>{product.shortName}</span><strong>{product.name}</strong><small>Size {line.size}</small><button type="button" onClick={() => removeLine(line)}>Remove</button></div>
+                  <div className="shop-cart__line-end"><span>{money.format(product.price * line.quantity)}</span><div className="shop-cart__quantity" aria-label={`Quantity for ${product.name}, size ${line.size}`}><button type="button" onClick={() => changeQuantity(line, -1)} aria-label="Decrease quantity">−</button><b aria-live="polite">{line.quantity}</b><button type="button" onClick={() => changeQuantity(line, 1)} aria-label="Increase quantity">+</button></div></div>
+                </li>;
+              })}
+            </ul>
+
+            <fieldset className="shop-cart__delivery">
+              <legend>How would you like to receive it?</legend>
+              {([
+                ['shipping-au', 'Australia shipping', 'Rate to be confirmed'],
+                ['shipping-worldwide', 'Worldwide shipping', 'Rate to be confirmed'],
+                ['local-pickup', 'Pakenham East pick-up', 'Allow 1–3 business days'],
+                ['event-pickup', 'Pick up at a GWG event', 'Humanitix reference required'],
+              ] as [DeliveryMethod, string, string][]).map(([value, label, detail]) => <label key={value}><input type="radio" name="delivery" value={value} checked={deliveryMethod === value} onChange={() => setDeliveryMethod(value)} /><span><strong>{label}</strong><small>{detail}</small></span></label>)}
+            </fieldset>
+
+            {deliveryMethod === 'event-pickup' && <label className="shop-cart__event-ref"><span>Humanitix booking reference</span><input type="text" value={eventReference} onChange={(event) => setEventReference(event.target.value)} placeholder="Enter your booking number" /></label>}
+          </>}
+        </div>
+
+        <footer className="shop-cart__footer">
+          <div><span>Subtotal</span><strong>{money.format(subtotal)}</strong></div>
+          <button type="button" disabled>Checkout setup in progress</button>
+          <p>Your cart is saved on this device. Secure Square payment and the printed GWG order receipt will switch on after setup and final testing.</p>
+        </footer>
+      </aside>
+    </div>
+  </div>;
+}
+
 function App() {
   const root = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
@@ -1784,5 +2097,5 @@ function App() {
 const rootContainer = document.getElementById('root') as HTMLDivElement & { reactRoot?: Root };
 rootContainer.reactRoot ??= createRoot(rootContainer);
 const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
-const currentPage = currentPath === '/events' ? <EventsPage /> : currentPath === '/about' ? <AboutPage /> : currentPath === '/gallery' ? <GalleryPage /> : currentPath === '/coaching' ? <CoachingPage /> : currentPath === '/private-events' ? <PrivateEventsPage /> : <App />;
+const currentPage = currentPath === '/events' ? <EventsPage /> : currentPath === '/about' ? <AboutPage /> : currentPath === '/gallery' ? <GalleryPage /> : currentPath === '/coaching' ? <CoachingPage /> : currentPath === '/private-events' ? <PrivateEventsPage /> : currentPath === '/shop' ? <ShopPage /> : <App />;
 rootContainer.reactRoot.render(currentPage);
