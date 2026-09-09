@@ -1557,7 +1557,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   background: linear-gradient(108deg, #100e0efa 0 46%, #100e0ede 66%, #100e0ef5), var(--grain), #100e0e;
 }
 .shop-hero::before { content: ''; position: absolute; z-index: -1; top: 50%; left: 7vw; width: min(43vw, 680px); aspect-ratio: 1; border-radius: 50%; opacity: .5; transform: translate(-48%, -48%); background: repeating-radial-gradient(circle, transparent 0 10.8%, #edcad60d 10.95% 11.1%, transparent 11.25% 21.7%); pointer-events: none; }
-.shop-hero::after { content: 'MERCH'; position: absolute; z-index: -1; right: -2vw; bottom: -6.5vw; color: #fff035; font: 700 clamp(11rem, 22vw, 25rem)/.7 var(--serif); letter-spacing: -.07em; pointer-events: none; }
+.shop-hero::after { content: 'MERCH'; position: absolute; z-index: -1; right: -2vw; bottom: -6.5vw; color: var(--pink); opacity: .22; font: 700 clamp(11rem, 22vw, 25rem)/.7 var(--serif); letter-spacing: -.07em; pointer-events: none; }
 .shop-hero__copy { position: relative; z-index: 2; max-width: 650px; padding-left: max(0px, calc((100vw - 1660px) / 2)); }
 .shop-hero__copy .eyebrow { margin-bottom: 29px; }
 .shop-hero h1 { margin: 0; font: 500 clamp(5rem, 7.65vw, 8.8rem)/.82 var(--serif); letter-spacing: -.055em; }
