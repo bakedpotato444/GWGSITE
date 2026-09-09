@@ -1609,10 +1609,10 @@ const merchandise: MerchandiseProduct[] = [
     price: 55,
     sizes: ['10', '12', '14', '16', '18', '20'],
     images: [
-      { src: '/merch/gwg-zip-up-front.webp', alt: 'Front view of the black Girls With Guns Australia zip-up hoodie', label: 'Front' },
+      { src: '/merch/gwg-zip-up-front-v2.webp', alt: 'Front view of the black Girls With Guns Australia zip-up hoodie with a small GWG logo on the left chest', label: 'Front' },
       { src: '/merch/gwg-zip-up.webp', alt: 'Back view of the black Girls With Guns Australia zip-up hoodie with the GWG graphic', label: 'Back' },
     ],
-    description: 'Black full zip-up hoodie with the Girls With Guns back graphic.',
+    description: 'Black full zip-up hoodie with a small GWG chest logo and large back graphic.',
     note: 'Sizes 10–20',
   },
   {
@@ -1623,9 +1623,9 @@ const merchandise: MerchandiseProduct[] = [
     sizes: ['One size'],
     images: [
       { src: '/merch/gwg-cap.webp', alt: 'Front view of the current black Girls With Guns Australia cap with pink embroidery', label: 'Front' },
-      { src: '/merch/gwg-cap-back.webp', alt: 'Back view of the current black Girls With Guns Australia cap with adjustable strap', label: 'Back' },
+      { src: '/merch/gwg-cap-back-v2.webp', alt: 'Back view of the current black Girls With Guns Australia cap with white Beretta Australia embroidery', label: 'Back' },
     ],
-    description: 'The current black cap with bright pink GWG embroidery.',
+    description: 'The current black cap with pink GWG embroidery on the front and white Beretta Australia embroidery on the back.',
     note: 'One size',
   },
   {
@@ -1635,10 +1635,10 @@ const merchandise: MerchandiseProduct[] = [
     price: 35,
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
     images: [
-      { src: '/merch/gwg-polo-front.webp', alt: 'Front view of the black Girls With Guns Australia polo shirt', label: 'Front' },
+      { src: '/merch/gwg-polo-front-v2.webp', alt: 'Front view of the black Girls With Guns Australia polo shirt with a small GWG logo on the left chest', label: 'Front' },
       { src: '/merch/gwg-polo.webp', alt: 'Back view of the black Girls With Guns Australia polo shirt with GWG and Shield Sights graphics', label: 'Back' },
     ],
-    description: 'Black short-sleeve polo with the GWG and Shield Sights back graphics.',
+    description: 'Black short-sleeve polo with a small GWG chest logo and GWG and Shield Sights back graphics.',
     note: 'Sizes XS–2XL',
   },
 ];
@@ -1852,7 +1852,7 @@ function ShopPage() {
               </div>
             </article>)}
           </div>
-          <p className="shop-collection__accuracy" data-shop-reveal>Back artwork and cap embroidery follow supplied GWG photos. Plain front and rear views are studio recreations and will be checked against physical stock before checkout launches. Colours may vary slightly from screen to screen.</p>
+          <p className="shop-collection__accuracy" data-shop-reveal>Artwork and placement follow supplied GWG photos and confirmed product details. Studio images are product representations; colours and fabric texture may vary slightly.</p>
         </div>
       </section>
 
