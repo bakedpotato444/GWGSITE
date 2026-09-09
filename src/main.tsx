@@ -1673,6 +1673,7 @@ function ProductMediaGallery({ product, index }: { product: MerchandiseProduct; 
   };
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLElement>) => {
+    if ((event.target as HTMLElement).closest('.shop-product__carousel-button')) return;
     swipeStart.current = { x: event.clientX, y: event.clientY };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
