@@ -1593,8 +1593,7 @@ type MerchandiseProduct = {
   shortName: string;
   price: number;
   sizes: string[];
-  image: string;
-  alt: string;
+  images: { src: string; alt: string; label: 'Front' | 'Back' }[];
   description: string;
   note: string;
 };
@@ -1609,8 +1608,10 @@ const merchandise: MerchandiseProduct[] = [
     shortName: 'Zip-up',
     price: 55,
     sizes: ['10', '12', '14', '16', '18', '20'],
-    image: '/merch/gwg-zip-up.webp',
-    alt: 'Back view of the black Girls With Guns Australia zip-up hoodie',
+    images: [
+      { src: '/merch/gwg-zip-up-front.webp', alt: 'Front view of the black Girls With Guns Australia zip-up hoodie', label: 'Front' },
+      { src: '/merch/gwg-zip-up.webp', alt: 'Back view of the black Girls With Guns Australia zip-up hoodie with the GWG graphic', label: 'Back' },
+    ],
     description: 'Black full zip-up hoodie with the Girls With Guns back graphic.',
     note: 'Sizes 10–20',
   },
@@ -1620,8 +1621,10 @@ const merchandise: MerchandiseProduct[] = [
     shortName: 'Cap',
     price: 20,
     sizes: ['One size'],
-    image: '/merch/gwg-cap.webp',
-    alt: 'Current black Girls With Guns Australia cap with pink embroidery',
+    images: [
+      { src: '/merch/gwg-cap.webp', alt: 'Front view of the current black Girls With Guns Australia cap with pink embroidery', label: 'Front' },
+      { src: '/merch/gwg-cap-back.webp', alt: 'Back view of the current black Girls With Guns Australia cap with adjustable strap', label: 'Back' },
+    ],
     description: 'The current black cap with bright pink GWG embroidery.',
     note: 'One size',
   },
@@ -1631,8 +1634,10 @@ const merchandise: MerchandiseProduct[] = [
     shortName: 'Polo',
     price: 35,
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
-    image: '/merch/gwg-polo.webp',
-    alt: 'Back view of the black Girls With Guns Australia polo shirt',
+    images: [
+      { src: '/merch/gwg-polo-front.webp', alt: 'Front view of the black Girls With Guns Australia polo shirt', label: 'Front' },
+      { src: '/merch/gwg-polo.webp', alt: 'Back view of the black Girls With Guns Australia polo shirt with GWG and Shield Sights graphics', label: 'Back' },
+    ],
     description: 'Black short-sleeve polo with the GWG and Shield Sights back graphics.',
     note: 'Sizes XS–2XL',
   },
@@ -1653,6 +1658,26 @@ function loadSavedCart(): CartLine[] {
   } catch {
     return [];
   }
+}
+
+function ProductMediaGallery({ product, index }: { product: MerchandiseProduct; index: number }) {
+  const [activeImage, setActiveImage] = useState(0);
+  const image = product.images[activeImage];
+
+  return <div className="shop-product__gallery">
+    <figure className="shop-product__media">
+      <img key={image.src} src={image.src} alt={image.alt} width="1120" height="1400" loading={index === 0 && activeImage === 0 ? 'eager' : 'lazy'} />
+      <figcaption><span>0{index + 1}</span><span>{image.label} / {product.note}</span></figcaption>
+    </figure>
+    <div className="shop-product__views" aria-label={`Choose a view of ${product.name}`}>
+      {product.images.map((option, optionIndex) => <button
+        type="button"
+        key={option.src}
+        aria-pressed={activeImage === optionIndex}
+        onClick={() => setActiveImage(optionIndex)}
+      ><span>0{optionIndex + 1}</span>{option.label}</button>)}
+    </div>
+  </div>;
 }
 
 function ShopPage() {
@@ -1800,8 +1825,8 @@ function ShopPage() {
           <a className="shop-hero__jump" href="#shop" data-shop-hero-reveal>Shop the collection <Arrow /></a>
         </div>
         <figure className="shop-hero__media" data-shop-hero-media>
-          <img src="/merch/gwg-cap.webp" alt="Current Girls With Guns Australia black cap" width="1120" height="1400" fetchPriority="high" data-shop-hero-image />
-          <figcaption><span>Current black cap</span><span>GWG / 2026</span></figcaption>
+          <img src="/merch/gwg-hats-hero.webp" alt="A collection of current black Girls With Guns Australia caps with pink embroidery" width="960" height="720" fetchPriority="high" data-shop-hero-image />
+          <figcaption><span>Current cap collection</span><span>Photo supplied by GWG</span></figcaption>
           <div className="shop-hero__tag" aria-label="Three merchandise pieces available now"><span>Merch drop</span><strong>03</strong><small>Pieces / available now</small></div>
         </figure>
       </section>
@@ -1818,10 +1843,7 @@ function ShopPage() {
 
           <div className="shop-products">
             {merchandise.map((product, index) => <article className={`shop-product shop-product--${product.id}`} key={product.id} data-shop-reveal>
-              <figure className="shop-product__media">
-                <img src={product.image} alt={product.alt} width="1120" height="1400" loading={index === 0 ? 'eager' : 'lazy'} />
-                <figcaption><span>0{index + 1}</span><span>{product.note}</span></figcaption>
-              </figure>
+              <ProductMediaGallery product={product} index={index} />
               <div className="shop-product__heading"><h3>{product.name}</h3><strong>{money.format(product.price)}</strong></div>
               <p>{product.description}</p>
               <div className="shop-product__controls">
@@ -1830,7 +1852,7 @@ function ShopPage() {
               </div>
             </article>)}
           </div>
-          <p className="shop-collection__accuracy" data-shop-reveal>Product imagery is based on the current GWG merchandise. Colours may vary slightly from screen to screen.</p>
+          <p className="shop-collection__accuracy" data-shop-reveal>Back artwork and cap embroidery follow supplied GWG photos. Plain front and rear views are studio recreations and will be checked against physical stock before checkout launches. Colours may vary slightly from screen to screen.</p>
         </div>
       </section>
 
@@ -1868,7 +1890,7 @@ function ShopPage() {
               {cart.map((line) => {
                 const product = merchandise.find((item) => item.id === line.productId)!;
                 return <li key={`${line.productId}-${line.size}`}>
-                  <img src={product.image} alt="" width="112" height="140" />
+                  <img src={product.images[0].src} alt="" width="112" height="140" />
                   <div className="shop-cart__line-copy"><span>{product.shortName}</span><strong>{product.name}</strong><small>Size {line.size}</small><button type="button" onClick={() => removeLine(line)}>Remove</button></div>
                   <div className="shop-cart__line-end"><span>{money.format(product.price * line.quantity)}</span><div className="shop-cart__quantity" aria-label={`Quantity for ${product.name}, size ${line.size}`}><button type="button" onClick={() => changeQuantity(line, -1)} aria-label="Decrease quantity">−</button><b aria-live="polite">{line.quantity}</b><button type="button" onClick={() => changeQuantity(line, 1)} aria-label="Increase quantity">+</button></div></div>
                 </li>;
