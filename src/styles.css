@@ -373,11 +373,17 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
 .events-ticket__button { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; min-height: 58px; margin-top: 21px; padding: 0 18px; border: 0; color: #251319; background: var(--grain), var(--pink); font-size: .875rem; font-weight: 600; letter-spacing: .085em; text-transform: uppercase; transition: background-color 200ms; }
 .events-ticket__note { position: relative; z-index: 1; min-height: 18px; margin: 13px 0 0; color: #7f6a60; font-size: .65rem; line-height: 1.42; }
 .events-dates { position: relative; z-index: 2; color: var(--ink); background: var(--grain), var(--paper); border-bottom: 1px solid #604d3d28; }
-.events-dates__inner { display: grid; grid-template-columns: .55fr 1.08fr .78fr auto; align-items: center; gap: clamp(32px, 5vw, 90px); max-width: 1660px; margin: auto; padding: 61px 6vw 66px; }
+.events-dates__inner { display: grid; grid-template-columns: .42fr .9fr 1.35fr auto; align-items: center; gap: clamp(28px, 4vw, 68px); max-width: 1660px; margin: auto; padding: 61px 6vw 66px; }
 .events-dates .eyebrow { font-size: .68rem; }
 .events-dates h2 { margin: 0; font: 500 clamp(2.65rem, 4vw, 4.6rem)/.87 var(--serif); letter-spacing: -.045em; }
 .events-dates h2 em { color: var(--pink-deep); font-weight: 500; }
-.events-dates__inner > p:not(.eyebrow) { max-width: 420px; margin: 0; color: #6c5a51; font-size: .96rem; line-height: 1.58; }
+.events-dates__copy p { max-width: 410px; margin: 18px 0 0; color: #6c5a51; font-size: .9rem; line-height: 1.52; }
+.events-dates__sessions { display: grid; grid-template-columns: repeat(3, minmax(105px, 1fr)); min-width: 0; margin: 0; padding: 0; border-block: 1px solid #604d3d30; list-style: none; }
+.events-dates__sessions li { display: flex; min-width: 0; flex-direction: column; gap: 5px; padding: 17px clamp(10px, 1vw, 16px); }
+.events-dates__sessions li + li { border-left: 1px solid #604d3d30; }
+.events-dates__sessions time { color: var(--pink-deep); font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.events-dates__sessions strong { font: 600 clamp(1.05rem, 1.3vw, 1.4rem)/1 var(--serif); letter-spacing: -.015em; white-space: nowrap; }
+.events-dates__sessions span { color: #7a685e; font-size: .68rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
 .events-dates a { display: flex; align-items: center; gap: 24px; min-height: 48px; padding-bottom: 4px; border-bottom: 1px solid #6a514652; color: var(--pink-deep); font-size: .71rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 .events-dates a .arrow { width: 22px; }
 .events-day { color: var(--ink); background: var(--grain), #eae1d2; }
@@ -1108,9 +1114,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .events-hero h1 { font-size: clamp(4.9rem, 8.7vw, 7.2rem); }
   .events-ticket { padding: 38px 34px; }
   .events-ticket h2 { font-size: clamp(3.35rem, 5.1vw, 4.7rem); }
-  .events-dates__inner { grid-template-columns: minmax(210px, .65fr) minmax(0, 1.35fr); padding-inline: 4.5vw; }
-  .events-dates h2 { grid-column: 2; grid-row: 1; }
-  .events-dates__inner > p:not(.eyebrow), .events-dates a { grid-column: 2; }
+  .events-dates__inner { grid-template-columns: minmax(190px, .5fr) minmax(0, 1.5fr); align-items: start; padding-inline: 4.5vw; }
+  .events-dates__copy { grid-column: 2; grid-row: 1; }
+  .events-dates__sessions, .events-dates a { grid-column: 2; }
   .events-day__inner, .events-ready__inner, .events-faq__inner, .events-waitlist__inner { padding-inline: 4.5vw; }
   .events-day__header { grid-template-columns: minmax(0, 1.15fr) minmax(290px, .62fr); column-gap: 6vw; }
   .events-day h2 { font-size: clamp(4.7rem, 8vw, 6.6rem); }
@@ -1149,7 +1155,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pink-bright); o
   .events-dates__inner { display: block; padding: 62px 24px 68px; }
   .events-dates .eyebrow { margin-bottom: 21px; }
   .events-dates h2 { font-size: clamp(3.2rem, 13vw, 4.4rem); }
-  .events-dates__inner > p:not(.eyebrow) { margin-top: 23px; }
+  .events-dates__copy p { margin-top: 23px; }
+  .events-dates__sessions { grid-template-columns: 1fr; margin-top: 30px; }
+  .events-dates__sessions li { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; align-items: center; gap: 13px; min-height: 61px; padding: 12px 0; }
+  .events-dates__sessions li + li { border-top: 1px solid #604d3d30; border-left: 0; }
+  .events-dates__sessions strong { font-size: 1.35rem; }
+  .events-dates__sessions span { text-align: right; }
   .events-dates a { width: fit-content; margin-top: 23px; white-space: normal; }
   .events-day__inner { padding: 101px 24px 91px; }
   .events-day__header { display: block; }

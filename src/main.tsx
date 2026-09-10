@@ -43,6 +43,45 @@ async function submitForm(event: FormEvent<HTMLFormElement>, endpoint: string, s
   }
 }
 
+function useInitialHashScroll(offset = 76) {
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash || hash === '#top') return;
+
+    let cancelled = false;
+    let didFocus = false;
+    let fontFrame: number | undefined;
+    const restore = () => {
+      if (cancelled) return;
+      const destination = document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (!destination) return;
+      const top = Math.max(0, window.scrollY + destination.getBoundingClientRect().top - offset);
+      window.scrollTo({ top, left: 0, behavior: 'auto' });
+      if (!didFocus) {
+        destination.focus({ preventScroll: true });
+        didFocus = true;
+      }
+      ScrollTrigger.update();
+    };
+
+    const restoreTimer = window.setTimeout(() => {
+      ScrollTrigger.refresh();
+      restore();
+    }, 80);
+    document.fonts.ready.then(() => {
+      if (!cancelled) fontFrame = window.requestAnimationFrame(restore);
+    });
+    window.addEventListener('load', restore, { once: true });
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(restoreTimer);
+      if (fontFrame !== undefined) window.cancelAnimationFrame(fontFrame);
+      window.removeEventListener('load', restore);
+    };
+  }, [offset]);
+}
+
 function Navigation({ light, currentPage = 'home', cartCount = 0, onCartOpen }: { light: boolean; currentPage?: SitePage; cartCount?: number; onCartOpen?: () => void }) {
   const [open, setOpen] = useState(false);
   const menu = useRef<HTMLElement>(null);
@@ -394,7 +433,7 @@ function SiteFooter({ currentPage = 'home' }: { currentPage?: SitePage }) {
       </nav>
       <div className="footer-social"><a href="https://www.instagram.com/gwgaustralia/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/groups/1732825510500169/" target="_blank" rel="noreferrer">Facebook group</a><a href="mailto:girlswithgunsaustralia@gmail.com">Email GWG</a><a href="tel:+61408682632">0408 682 632</a></div>
       <p className="site-footer__signoff">Come curious.<br /><em>Leave confident.</em></p>
-      <div className="site-footer__bottom"><span>© 2026 Girls With Guns Australia</span><span>Private website prototype</span><a href="#top">Back to top <Arrow /></a></div>
+      <div className="site-footer__bottom"><span>© 2026 Girls With Guns Australia</span><span>Victoria, Australia</span><a href="#top">Back to top <Arrow /></a></div>
     </div>
   </footer>;
 }
@@ -420,6 +459,8 @@ function EventsPage() {
   const waitlistSuccess = useRef<HTMLDivElement>(null);
   const [lightHeader, setLightHeader] = useState(false);
   const [waitlistStatus, setWaitlistStatus] = useState<FormStatus>('idle');
+
+  useInitialHashScroll();
 
   useEffect(() => {
     document.title = 'Events — Girls With Guns Australia';
@@ -527,10 +568,17 @@ function EventsPage() {
 
       <section className="events-dates" data-events-dates data-events-section aria-labelledby="events-dates-heading">
         <div className="events-dates__inner">
-          <p className="eyebrow eyebrow--dark" data-events-reveal><span />More shoot dates</p>
-          <h2 id="events-dates-heading" data-events-reveal>The next one will<br /><em>appear here.</em></h2>
-          <p data-events-reveal>As new events are confirmed, this page will show the date, range, availability and booking link in one place.</p>
-          <a href="#waitlist" data-events-reveal>Tell GWG where to go next <Arrow /></a>
+          <p className="eyebrow eyebrow--dark" data-events-reveal><span />Also confirmed</p>
+          <div className="events-dates__copy" data-events-reveal>
+            <h2 id="events-dates-heading">More sessions.<br /><em>Same clear start.</em></h2>
+            <p>Humanitix currently lists an afternoon Beaconsfield session and two October sessions at Oakleigh.</p>
+          </div>
+          <ul className="events-dates__sessions" aria-label="Additional upcoming Girls With Guns sessions" data-events-reveal>
+            <li><time dateTime="2026-09-13">13 Sep</time><strong>Beaconsfield</strong><span>2:00 PM</span></li>
+            <li><time dateTime="2026-10-18">18 Oct</time><strong>Oakleigh</strong><span>10:30 AM</span></li>
+            <li><time dateTime="2026-10-18">18 Oct</time><strong>Oakleigh</strong><span>2:00 PM</span></li>
+          </ul>
+          <a href="https://events.humanitix.com/host/girls-with-guns-australia" target="_blank" rel="noreferrer" data-events-reveal>View every live ticket <Arrow /></a>
         </div>
       </section>
 
@@ -584,7 +632,7 @@ function EventsPage() {
           <div className="events-faq__list" data-events-reveal>
             {eventFaq.map(({ question, answer }) => <details key={question}><summary>{question}<span aria-hidden="true" /></summary><p>{answer}</p></details>)}
           </div>
-          <p className="events-faq__note" data-events-reveal>Prototype content: the event date, availability and eligibility details still need final confirmation.</p>
+          <p className="events-faq__note" data-events-reveal>Event details can change. Check the live Humanitix listing before booking.</p>
         </div>
       </section>
 
@@ -645,6 +693,8 @@ const sponsors = [
 function AboutPage() {
   const root = useRef<HTMLDivElement>(null);
   const [lightHeader, setLightHeader] = useState(false);
+
+  useInitialHashScroll();
 
   useEffect(() => {
     document.title = 'About — Girls With Guns Australia';
@@ -959,6 +1009,8 @@ function GalleryPage() {
   const [lightHeader, setLightHeader] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
   const [carouselPaused, setCarouselPaused] = useState(false);
+
+  useInitialHashScroll();
   const [reduceMotion, setReduceMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const featuredImages = galleryImages.slice(0, 5);
@@ -1221,6 +1273,8 @@ function CoachingPage() {
   const [lightHeader, setLightHeader] = useState(false);
   const [formStatus, setFormStatus] = useState<FormStatus>('idle');
 
+  useInitialHashScroll();
+
   useEffect(() => {
     document.title = '1-on-1 Coaching — Girls With Guns Australia';
     const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
@@ -1334,7 +1388,7 @@ function CoachingPage() {
           <ol className="coaching-fit__list">
             {coachingFits.map(({ number, title, detail }) => <li key={number} data-coaching-reveal><span>{number}</span><h3>{title}</h3><p>{detail}</p></li>)}
           </ol>
-          <p className="coaching-fit__note" data-coaching-reveal>Final coaching inclusions, pricing and availability will be confirmed with GWG before launch.</p>
+          <p className="coaching-fit__note" data-coaching-reveal>Coaching is available by enquiry. GWG confirms pricing, timing and a suitable range once they understand what you need.</p>
         </div>
       </section>
 
@@ -1409,6 +1463,8 @@ function PrivateEventsPage() {
   const success = useRef<HTMLDivElement>(null);
   const [lightHeader, setLightHeader] = useState(false);
   const [formStatus, setFormStatus] = useState<FormStatus>('idle');
+
+  useInitialHashScroll();
 
   useEffect(() => {
     document.title = 'Private Events — Girls With Guns Australia';
@@ -1977,6 +2033,7 @@ function App() {
   const scene = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const experience = useRef<ScrollTrigger | null>(null);
+  const storyScroll = useRef<gsap.core.Tween | null>(null);
   const [heroActive, setHeroActive] = useState(true);
   const [lightHeader, setLightHeader] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -1984,13 +2041,25 @@ function App() {
   const goToStory = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
+    storyScroll.current?.kill();
     const target = document.getElementById('story');
+    history.replaceState(null, '', '#story');
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !experience.current) {
       target?.scrollIntoView(); target?.focus({ preventScroll: true }); return;
     }
-    gsap.to(window, { scrollTo: { y: experience.current.end, autoKill: true }, duration: 1.15, overwrite: 'auto', ease: 'power2.inOut', onComplete: () => {
-      history.replaceState(null, '', '#story'); target?.focus({ preventScroll: true });
-    } });
+    const mobile = window.matchMedia('(max-width: 767px)').matches;
+    const transitionEnd = Math.round(window.innerHeight * (mobile ? .78 : .96));
+    const position = { y: window.scrollY };
+    storyScroll.current = gsap.to(position, {
+      y: transitionEnd,
+      duration: 1.15,
+      ease: 'power2.inOut',
+      onUpdate: () => window.scrollTo(0, position.y),
+      onComplete: () => {
+        storyScroll.current = null;
+        target?.focus({ preventScroll: true });
+      },
+    });
   };
 
   const navigatePreview = (event: MouseEvent<HTMLDivElement>) => {
@@ -2140,7 +2209,7 @@ function App() {
     const restoreHash = window.setTimeout(() => {
       if (location.hash === '#story' && experience.current) window.scrollTo({ top: experience.current.end, behavior: 'instant' });
     }, 150);
-    return () => { alive = false; window.clearTimeout(restoreHash); experienceHeader?.kill(); exploreHeader?.kill(); endHeader?.kill(); mm.revert(); };
+    return () => { alive = false; storyScroll.current?.kill(); window.clearTimeout(restoreHash); experienceHeader?.kill(); exploreHeader?.kill(); endHeader?.kill(); mm.revert(); };
   }, []);
 
   return <div className="app" ref={root} id="top" onClick={navigatePreview}>
