@@ -24,6 +24,8 @@ const formEndpoints = {
   privateEvents: 'https://formspree.io/f/mppzoadw',
 } as const;
 
+const humanitixHostUrl = 'https://events.humanitix.com/host/girls-with-guns-australia';
+
 async function submitForm(event: FormEvent<HTMLFormElement>, endpoint: string, setStatus: (status: FormStatus) => void) {
   event.preventDefault();
   const form = event.currentTarget;
@@ -221,9 +223,9 @@ function DetailIcon({ clock = false }: { clock?: boolean }) {
 function EventCard() {
   return <div className="event-position" data-hero-overlay><article className="event-card">
     <span className="event-card__pin" aria-hidden="true" />
-    <div className="event-card__topline"><p className="eyebrow">Next shoot</p><span className="event-card__availability"><i />Check Humanitix</span></div>
-    <h2>Beaconsfield</h2>
-    <div className="event-card__details"><p><DetailIcon />13 September</p><p><DetailIcon clock />10:30 AM</p></div>
+    <div className="event-card__topline"><p className="eyebrow">Next shoot</p><span className="event-card__availability"><i />Open now</span></div>
+    <h2>Victoria</h2>
+    <div className="event-card__details"><p><DetailIcon />Beginner sessions</p><p><DetailIcon clock />See live dates</p></div>
     <a href="/events#event-details" className="paper-button"><span>Book your spot</span><Arrow /></a>
     <span className="event-card__fold" aria-hidden="true" />
   </article></div>;
@@ -391,11 +393,11 @@ function FinalCta() {
 
         <div className="final-cta__grid">
           <article className="final-event" data-final-card aria-labelledby="final-event-title">
-            <div className="final-event__topline"><span>Next shoot</span><span className="final-event__status"><i />Check Humanitix</span></div>
-            <h3 id="final-event-title">Beaconsfield</h3>
+            <div className="final-event__topline"><span>Next shoot</span><span className="final-event__status"><i />Open now</span></div>
+            <h3 id="final-event-title">Victoria</h3>
             <dl className="final-event__details">
-              <div><dt>Date</dt><dd>13 September</dd></div>
-              <div><dt>Start</dt><dd>10:30 AM</dd></div>
+              <div><dt>Format</dt><dd>Beginner friendly</dd></div>
+              <div><dt>Dates</dt><dd>See live listing</dd></div>
             </dl>
             <a className="final-event__button" href="/events#event-details"><span>Book your spot</span><Arrow /></a>
             <p className="final-event__note">Live availability and bookings are confirmed through Humanitix.</p>
@@ -433,7 +435,7 @@ function SiteFooter({ currentPage = 'home' }: { currentPage?: SitePage }) {
       </nav>
       <div className="footer-social"><a href="https://www.instagram.com/gwgaustralia/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/groups/1732825510500169/" target="_blank" rel="noreferrer">Facebook group</a><a href="mailto:girlswithgunsaustralia@gmail.com">Email GWG</a><a href="tel:+61408682632">0408 682 632</a></div>
       <p className="site-footer__signoff">Come curious.<br /><em>Leave confident.</em></p>
-      <div className="site-footer__bottom"><span>© 2026 Girls With Guns Australia</span><span>Victoria, Australia</span><a href="#top">Back to top <Arrow /></a></div>
+      <div className="site-footer__bottom"><span>© 2026 Girls With Guns Australia</span><span>Victoria, Australia</span><a className="footer-maker" href="https://www.linkedin.com/in/masonbuckland/" target="_blank" rel="noreferrer" aria-label="Site designed and built by Mason Buckland — view Mason on LinkedIn"><small>Site designed &amp; built by</small><strong>Mason Buckland</strong></a><a href="#top">Back to top <Arrow /></a></div>
     </div>
   </footer>;
 }
@@ -550,17 +552,11 @@ function EventsPage() {
           </div>
 
           <article className="events-ticket" id="event-details" data-events-ticket aria-labelledby="events-ticket-title" tabIndex={-1}>
-            <div className="events-ticket__topline"><span>Next event</span><span className="events-ticket__status"><i />Check availability</span></div>
+            <div className="events-ticket__topline"><span>Next event</span><span className="events-ticket__status"><i />Open now</span></div>
             <p className="events-ticket__place">Next shoot / Victoria</p>
-            <h2 id="events-ticket-title">Beaconsfield</h2>
-            <dl className="events-ticket__details">
-              <div><dt>Date</dt><dd><time>13 September</time></dd></div>
-              <div><dt>Start</dt><dd><time>10:30 AM</time></dd></div>
-              <div><dt>Location</dt><dd>Beaconsfield</dd></div>
-              <div><dt>Price</dt><dd>From $130</dd></div>
-            </dl>
+            <h2 id="events-ticket-title">Book a shoot</h2>
             <ul className="events-ticket__tags" aria-label="Event highlights"><li>Beginner friendly</li><li>Ages 12+</li><li>Ages 12–17 with guardian</li><li>Equipment provided</li></ul>
-            <a className="events-ticket__button" href="https://events.humanitix.com/host/girls-with-guns-australia" target="_blank" rel="noreferrer"><span>View live tickets</span><Arrow /></a>
+            <a className="events-ticket__button" href={humanitixHostUrl} target="_blank" rel="noreferrer"><span>View live tickets</span><Arrow /></a>
             <p className="events-ticket__note">Humanitix is the source of truth for availability, session times and final booking details.</p>
           </article>
         </div>
@@ -568,17 +564,15 @@ function EventsPage() {
 
       <section className="events-dates" data-events-dates data-events-section aria-labelledby="events-dates-heading">
         <div className="events-dates__inner">
-          <p className="eyebrow eyebrow--dark" data-events-reveal><span />Also confirmed</p>
+          <p className="eyebrow eyebrow--dark" data-events-reveal><span />Live from Humanitix</p>
           <div className="events-dates__copy" data-events-reveal>
-            <h2 id="events-dates-heading">More sessions.<br /><em>Same clear start.</em></h2>
-            <p>Humanitix currently lists an afternoon Beaconsfield session and two October sessions at Oakleigh.</p>
+            <h2 id="events-dates-heading">All upcoming<br /><em>sessions.</em></h2>
+            <p>Pulled straight from Humanitix, so this list updates on its own whenever a new session goes up.</p>
           </div>
-          <ul className="events-dates__sessions" aria-label="Additional upcoming Girls With Guns sessions" data-events-reveal>
-            <li><time dateTime="2026-09-13">13 Sep</time><strong>Beaconsfield</strong><span>2:00 PM</span></li>
-            <li><time dateTime="2026-10-18">18 Oct</time><strong>Oakleigh</strong><span>10:30 AM</span></li>
-            <li><time dateTime="2026-10-18">18 Oct</time><strong>Oakleigh</strong><span>2:00 PM</span></li>
-          </ul>
-          <a href="https://events.humanitix.com/host/girls-with-guns-australia" target="_blank" rel="noreferrer" data-events-reveal>View every live ticket <Arrow /></a>
+          <a href={humanitixHostUrl} target="_blank" rel="noreferrer" data-events-reveal>View every live ticket <Arrow /></a>
+        </div>
+        <div className="events-dates__widget-wrap" data-events-reveal>
+          <iframe className="events-dates__widget" data-collection="upcoming-events-f53e96" title="Upcoming Girls With Guns sessions" loading="lazy" />
         </div>
       </section>
 
@@ -640,7 +634,7 @@ function EventsPage() {
         <div className="events-waitlist__inner">
           <header>
             <p className="eyebrow" data-events-reveal><span />05 / Your area</p>
-            <h2 id="events-waitlist-heading" data-events-reveal>Not near<br />Beaconsfield?<br /><em>Tell GWG.</em></h2>
+            <h2 id="events-waitlist-heading" data-events-reveal>Not near<br />this shoot?<br /><em>Tell GWG.</em></h2>
           </header>
           <div className="events-waitlist__form" data-events-reveal>
             <h3>Where should the next shoot be?</h3>
